@@ -1,0 +1,8 @@
+public/uploads/*
+!public/uploads/.gitkeep
+data/scenes/*
+!data/scenes/.gitkeep
+public/music/*
+!public/music/.gitkeep
+
+node_modules/
