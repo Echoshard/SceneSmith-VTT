@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SceneSmith - Cannon Fodder Maker</title>
+  <link rel="icon" type="image/png" href="SceneSmith.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0d0d12;
+      --sidebar: #13131a;
+      --panel: #181822;
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #00a2ff;
+      --accent-glow: rgba(0, 162, 255, 0.25);
+      --text: #e6e6f0;
+      --text-muted: #888899;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top App Header */
+    .app-header {
+      height: 52px;
+      background: var(--sidebar);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    .header-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .icon-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .icon-btn.primary:hover {
+      background: #0070f3;
+    }
+
+    /* Main Workspace Layout */
+    .workspace {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Left Sidebar: Generator Controls */
+    .sidebar {
+      width: 320px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+    }
+
+    .sidebar-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gen-group {
+      margin-bottom: 18px;
+    }
+
+    .gen-group label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .level-badge {
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      background: #181824;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: #181824;
+      border-radius: 3px;
+      outline: none;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Viewer Pane */
+    .viewer-pane {
+      flex: 1;
+      background: var(--bg);
+      overflow-y: auto;
+      padding: 24px 36px;
+    }
+
+    .statblock-card {
+      max-width: 780px;
+      margin: 0 auto;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .sb-header {
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+
+    .sb-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .sb-type {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--text-muted);
+    }
+
+    .sb-ribbon {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      margin: 14px 0;
+      display: flex;
+      gap: 16px;
+      justify-content: space-around;
+      text-align: center;
+    }
+
+    .sb-ribbon-item .label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .sb-ribbon-item .val {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .sb-prop {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .sb-prop strong {
+      color: var(--accent);
+    }
+
+    .sb-section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+      margin: 16px 0 10px 0;
+    }
+
+    .sb-action {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 8px;
+      color: #d0d0e0;
+    }
+
+    .sb-action strong {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <div class="app-header">
+    <div class="header-left">
+      <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Home Portal</a>
+      <div class="header-title"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--accent);"></i> Cannon Fodder Maker</div>
+    </div>
+
+    <div style="display:flex;gap:8px;">
+      <button class="icon-btn primary" onclick="copyStatBlock()"><i class="fa-solid fa-copy"></i> Copy Stat Block (With Abilities)</button>
+    </div>
+  </div>
+
+  <!-- Workspace -->
+  <div class="workspace">
+    <!-- Sidebar Controls -->
+    <div class="sidebar">
+      <div class="sidebar-title"><i class="fa-solid fa-sliders" style="color:var(--accent);"></i> Minion Generator</div>
+      
+      <div class="gen-group">
+        <label>Archetype Class</label>
+        <select id="genArchetype" onchange="generateFodder()">
+          <option value="priest">Priest (Cleric Divine Healer & Spells)</option>
+          <option value="druid">Druid (Nature Shifter & Spells)</option>
+          <option value="bard">Bard (College Support & Spells)</option>
+          <option value="mage">Mage (Arcane Spellcaster)</option>
+          <option value="thief">Thief (Agile Rogue Skirmisher)</option>
+          <option value="grunt">Grunt (Tanky Frontline Warrior)</option>
+        </select>
+      </div>
+
+      <div class="gen-group">
+        <label>
+          <span>Class Level</span>
+          <span class="level-badge" id="levelLabel">Level 3</span>
+        </label>
+        <input type="range" id="genLevel" min="1" max="20" value="3" oninput="updateLevelLabel(this.value); generateFodder();">
+      </div>
+
+      <div class="gen-group">
+        <label>Custom Name (Optional)</label>
+        <input type="text" id="genName" placeholder="e.g. Guard, Cultist" oninput="generateFodder()">
+      </div>
+    </div>
+
+    <!-- Stat Block Card Viewer -->
+    <div class="viewer-pane">
+      <div id="statblockCardView">
+        <!-- Rendered stat block card -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let activeMinion = null;
+
+    function updateLevelLabel(val) {
+      document.getElementById('levelLabel').textContent = `Level ${val}`;
+    }
+
+    /* ── Client-side Ultra-Concise Rules Engine ─────────────────────────────────── */
+    function getClericSpells(lvl, pMod, cDice) {
+      let spells = [`Cantrips: Sacred Flame (${cDice}d8), Toll the Dead (${cDice}d8/${cDice}d12), Word of Radiance (${cDice}d6), Thaumaturgy, Guidance`];
+      if (lvl >= 1) spells.push(`1st Level (3/Day): Cure Wounds (2d8+${pMod}), Healing Word (2d4+${pMod}), Guiding Bolt (4d6), Bless`);
+      if (lvl >= 3) spells.push(`2nd Level (3/Day): Spiritual Weapon (1d8+${pMod}), Prayer of Healing, Aid, Hold Person`);
+      if (lvl >= 5) spells.push(`3rd Level (3/Day): Spirit Guardians (3d8 aura), Mass Healing Word, Revivify, Dispel Magic`);
+      if (lvl >= 7) spells.push(`4th Level (3/Day): Death Ward, Guardian of Faith, Banishment`);
+      if (lvl >= 9) spells.push(`5th Level (2/Day): Flame Strike (4d6 fire + 4d6 radiant), Mass Cure Wounds (3d8+${pMod}), Greater Restoration`);
+      return spells.join(" | ");
+    }
+
+    function getDruidSpells(lvl, pMod, cDice) {
+      let spells = [`Cantrips: Produce Flame (${cDice}d8), Thorn Whip (${cDice}d6), Shillelagh (${cDice}d8+${pMod}), Guidance`];
+      if (lvl >= 1) spells.push(`1st Level (3/Day): Cure Wounds (2d8+${pMod}), Healing Word (2d4+${pMod}), Entangle, Goodberry`);
+      if (lvl >= 3) spells.push(`2nd Level (3/Day): Spike Growth (2d4/5ft), Moonbeam (2d10), Barkskin, Pass Without Trace`);
+      if (lvl >= 5) spells.push(`3rd Level (3/Day): Call Lightning (3d10), Plant Growth, Sleet Storm, Revivify`);
+      if (lvl >= 7) spells.push(`4th Level (3/Day): Ice Storm (2d8+4d6), Polymorph, Grasping Vine`);
+      if (lvl >= 9) spells.push(`5th Level (2/Day): Commune with Nature, Tree Stride, Wrath of Nature`);
+      return spells.join(" | ");
+    }
+
+    function getBardSpells(lvl, pMod, cDice) {
+      let spells = [`Cantrips: Vicious Mockery (${cDice}d6), Thunderclap (${cDice}d6), True Strike (${cDice}d6), Minor Illusion`];
+      if (lvl >= 1) spells.push(`1st Level (3/Day): Cure Wounds (2d8+${pMod}), Healing Word (2d4+${pMod}), Dissonant Whispers (3d6), Faerie Fire`);
+      if (lvl >= 3) spells.push(`2nd Level (3/Day): Shatter (3d8), Suggestion, Invisibility, Silence`);
+      if (lvl >= 5) spells.push(`3rd Level (3/Day): Hypnotic Pattern, Dispel Magic, Major Image`);
+      if (lvl >= 7) spells.push(`4th Level (3/Day): Dimension Door, Greater Invisibility, Compulsion`);
+      if (lvl >= 9) spells.push(`5th Level (2/Day): Hold Monster, Synaptic Static (8d6), Modify Memory`);
+      return spells.join(" | ");
+    }
+
+    function getMageSpells(lvl, pMod, cDice) {
+      let spells = [`Cantrips: Fire Bolt (${cDice}d10), Ray of Frost (${cDice}d8), Shocking Grasp (${cDice}d8), Mage Hand`];
+      if (lvl >= 1) spells.push(`1st Level (3/Day): Magic Missile, Shield, Thunderwave, Burning Hands`);
+      if (lvl >= 3) spells.push(`2nd Level (3/Day): Misty Step, Scorching Ray (3x 2d6), Mirror Image, Shatter`);
+      if (lvl >= 5) spells.push(`3rd Level (3/Day): Fireball (8d6), Counterspell, Lightning Bolt, Haste`);
+      if (lvl >= 7) spells.push(`4th Level (3/Day): Dimension Door, Ice Storm (2d8+4d6), Polymorph, Greater Invisibility`);
+      if (lvl >= 9) spells.push(`5th Level (2/Day): Cone of Cold (8d8), Telekinesis, Wall of Force`);
+      return spells.join(" | ");
+    }
+
+    function generateFodderClient(key, lvl, customName) {
+      const pb = Math.floor((lvl - 1) / 4) + 2;
+      const cDice = lvl < 5 ? 1 : (lvl < 11 ? 2 : (lvl < 17 ? 3 : 4));
+      const pMod = 3 + Math.floor(lvl / 4);
+      const dc = 8 + pb + pMod;
+      const attMod = pMod + pb;
+
+      if (key === 'priest') {
+        const name = customName || `Level ${lvl} Cleric Priest`;
+        return {
+          name: name,
+          type: `Level ${lvl} Cleric Priest`,
+          hp: 10 + (lvl - 1) * 7,
+          ac: 16 + Math.floor(lvl / 5),
+          init: "+0",
+          perception: `+${pMod + pb}`,
+          stats: `STR +1 | DEX +0 | CON +2 | INT +1 | WIS +${pMod} | CHA +1`,
+          saves: `WIS +${pMod + pb} | CHA +${1 + pb}`,
+          skills: `Religion +${1 + pb}, Medicine +${pMod + pb}, Perception +${pMod + pb}`,
+          traits: [
+            { name: "Divine Spellcasting", detail: getClericSpells(lvl, pMod, cDice) },
+            { name: "Divine Spark (2/Day)", detail: `Action | Heal or deal 1d8 + ${pMod} Radiant/Necrotic` },
+            { name: "Turn Undead", detail: `30FT | DC ${dc} WIS save or Undead Frightened & Incapacitated 1 min` }
+          ],
+          actions: [
+            { name: "Sacred Flame", detail: `60FT | DC ${dc} DEX | ${cDice}d8 radiant` },
+            { name: "Toll the Dead", detail: `60FT | DC ${dc} WIS | ${cDice}d8 (${cDice}d12 if damaged) necrotic` },
+            { name: "Word of Radiance", detail: `5FT Burst | DC ${dc} CON | ${cDice}d6 radiant` },
+            { name: "Guiding Bolt", detail: `120FT | +${attMod} | 4d6 radiant (next attack adv)` },
+            { name: "Cure Wounds", detail: `30FT | Restore 2d8 + ${pMod} HP` }
+          ]
+        };
+      } else if (key === 'druid') {
+        const name = customName || `Level ${lvl} Nature Druid`;
+        return {
+          name: name,
+          type: `Level ${lvl} Nature Druid`,
+          hp: 10 + (lvl - 1) * 7,
+          ac: 15 + Math.floor(lvl / 5),
+          init: "+2",
+          perception: `+${pMod + pb}`,
+          stats: `STR +0 | DEX +2 | CON +2 | INT +1 | WIS +${pMod} | CHA +0`,
+          saves: `WIS +${pMod + pb} | INT +${1 + pb}`,
+          skills: `Nature +${1 + pb}, Survival +${pMod + pb}, Perception +${pMod + pb}`,
+          traits: [
+            { name: "Wild Shape", detail: `Bonus Action | Beast Form (+${15 + lvl * 3} Temp HP)` },
+            { name: "Nature Spellcasting", detail: getDruidSpells(lvl, pMod, cDice) }
+          ],
+          actions: [
+            { name: "Produce Flame", detail: `30FT | +${attMod} | ${cDice}d8 fire` },
+            { name: "Thorn Whip", detail: `30FT | +${attMod} | ${cDice}d6 piercing (pulls 10ft)` },
+            { name: "Shillelagh Strike", detail: `Melee | +${attMod} | ${cDice}d8+${pMod} bludgeoning` },
+            { name: "Cure Wounds", detail: `30FT | Restore 2d8 + ${pMod} HP` }
+          ]
+        };
+      } else if (key === 'bard') {
+        const name = customName || `Level ${lvl} Support Bard`;
+        return {
+          name: name,
+          type: `Level ${lvl} Support Bard`,
+          hp: 9 + (lvl - 1) * 6,
+          ac: 15 + Math.floor(lvl / 4),
+          init: "+2",
+          perception: `+${1 + pb}`,
+          stats: `STR +0 | DEX +2 | CON +1 | INT +1 | WIS +1 | CHA +${pMod}`,
+          saves: `DEX +${2 + pb} | CHA +${pMod + pb}`,
+          skills: `Performance +${pMod + pb}, Deception +${pMod + pb}, Persuasion +${pMod + pb}`,
+          traits: [
+            { name: "Bardic Inspiration", detail: "Bonus Action/Reaction | Grant ally +1d8 die" },
+            { name: "Bardic Spellcasting", detail: getBardSpells(lvl, pMod, cDice) }
+          ],
+          actions: [
+            { name: "Vicious Mockery", detail: `60FT | DC ${dc} WIS | ${cDice}d6 psychic (target disadv)` },
+            { name: "Thunderclap", detail: `5FT Burst | DC ${dc} CON | ${cDice}d6 thunder` },
+            { name: "True Strike", detail: `Melee/Ranged | +${attMod} | 1d8+${pMod} + ${cDice}d6 radiant` },
+            { name: "Rapier Strike", detail: `Melee | +${attMod} | 1d8+${pMod} piercing` }
+          ]
+        };
+      } else if (key === 'mage') {
+        const name = customName || `Level ${lvl} Arcane Spellcaster`;
+        return {
+          name: name,
+          type: `Level ${lvl} Arcane Spellcaster`,
+          hp: 8 + (lvl - 1) * 5,
+          ac: 13 + Math.floor(lvl / 5),
+          init: `+${2 + Math.floor(lvl / 6)}`,
+          perception: `+${1 + Math.floor(lvl / 3)}`,
+          stats: `STR +0 | DEX +2 | CON +2 | INT +${pMod} | WIS +1 | CHA +0`,
+          saves: `INT +${pMod + pb} | WIS +${1 + pb}`,
+          skills: `Arcana +${pMod + pb}, History +${pMod}`,
+          traits: [
+            { name: "Arcane Spellcasting", detail: getMageSpells(lvl, pMod, cDice) }
+          ],
+          actions: [
+            { name: "Fire Bolt", detail: `120FT | +${attMod} | ${cDice}d10 fire` },
+            { name: "Ray of Frost", detail: `60FT | +${attMod} | ${cDice}d8 cold (-10ft speed)` },
+            { name: "Shocking Grasp", detail: `Melee | +${attMod} | ${cDice}d8 lightning (no reactions)` },
+            { name: "Fireball", detail: `150FT (20ft sphere) | DC ${dc} DEX | 8d6 fire` }
+          ]
+        };
+      } else if (key === 'thief') {
+        const name = customName || `Level ${lvl} Rogue Skirmisher`;
+        return {
+          name: name,
+          type: `Level ${lvl} Rogue Skirmisher`,
+          hp: 9 + (lvl - 1) * 6,
+          ac: 14 + Math.floor(lvl / 4),
+          init: `+${pMod}`,
+          perception: `+${2 + pb}`,
+          stats: `STR +0 | DEX +${pMod} | CON +2 | INT +1 | WIS +1 | CHA +1`,
+          saves: `DEX +${pMod + pb} | INT +${1 + pb}`,
+          skills: `Stealth +${pMod + pb + 2}, Acrobatics +${pMod + pb}`,
+          traits: [
+            { name: "Cunning Action", detail: "Bonus Action | Dash, Disengage, or Hide" },
+            { name: "Evasion", detail: "Half / No damage on DEX saves" }
+          ],
+          actions: [
+            { name: "Dual Daggers", detail: `Melee/Ranged (20/60FT) | +${attMod} | 1d4+${pMod} piercing + ${Math.ceil(lvl/2)}d6 Sneak` }
+          ]
+        };
+      } else { // Grunt
+        const name = customName || `Level ${lvl} Frontline Warrior`;
+        return {
+          name: name,
+          type: `Level ${lvl} Frontline Warrior`,
+          hp: 12 + (lvl - 1) * 8,
+          ac: 15 + Math.floor(lvl / 4),
+          init: "+1",
+          perception: "+1",
+          stats: `STR +${pMod} | DEX +1 | CON +3 | INT +0 | WIS +1 | CHA +0`,
+          saves: `STR +${pMod + pb} | CON +${3 + pb}`,
+          skills: `Athletics +${pMod + pb}, Intimidation +2`,
+          traits: [
+            { name: "Second Wind (2/Day)", detail: `Bonus Action | Regain 1d10 + ${lvl} HP (or move half speed)` },
+            { name: "Shield Wall", detail: "Gains +2 AC when adjacent to another Grunt" }
+          ],
+          actions: [
+            { name: "Heavy Sword", detail: `Melee | +${attMod} | 1d10+${pMod} slashing (DC ${dc} STR or Prone)` },
+            { name: "Heavy Crossbow", detail: `100/400FT | +${1 + pb} | 1d10+1 piercing (pushes 10ft)` }
+          ]
+        };
+      }
+    }
+
+    function generateFodder() {
+      const archetype = document.getElementById('genArchetype').value;
+      const level = parseInt(document.getElementById('genLevel').value) || 3;
+      const name = document.getElementById('genName').value.trim();
+
+      activeMinion = generateFodderClient(archetype, level, name);
+      renderStatBlockCard(activeMinion);
+    }
+
+    function renderStatBlockCard(block) {
+      const viewEl = document.getElementById('statblockCardView');
+      viewEl.innerHTML = `
+        <div class="statblock-card">
+          <div class="sb-header">
+            <div class="sb-title">${block.name}</div>
+            <div class="sb-type">${block.type || 'Medium Minion'}</div>
+          </div>
+
+          <div class="sb-ribbon">
+            <div class="sb-ribbon-item">
+              <div class="label">Armor Class</div>
+              <div class="val">${block.ac}</div>
+            </div>
+            <div class="sb-ribbon-item">
+              <div class="label">Hit Points</div>
+              <div class="val">${block.hp}</div>
+            </div>
+            <div class="sb-ribbon-item">
+              <div class="label">Initiative</div>
+              <div class="val">${block.init}</div>
+            </div>
+            <div class="sb-ribbon-item">
+              <div class="label">Perception</div>
+              <div class="val">${block.perception}</div>
+            </div>
+          </div>
+
+          ${block.stats ? `<div class="sb-prop"><strong>Stats:</strong> ${block.stats}</div>` : ''}
+          ${block.saves ? `<div class="sb-prop"><strong>Saving Throws:</strong> ${block.saves}</div>` : ''}
+          ${block.skills ? `<div class="sb-prop"><strong>Skills:</strong> ${block.skills}</div>` : ''}
+
+          ${block.traits && block.traits.length > 0 ? `
+            <div class="sb-section-title"><i class="fa-solid fa-star" style="color:var(--accent);margin-right:6px;"></i> Special Abilities & Spells</div>
+            ${block.traits.map(t => `<div class="sb-action"><strong>${t.name}.</strong> ${t.detail}</div>`).join('')}
+          ` : ''}
+
+          ${block.actions && block.actions.length > 0 ? `
+            <div class="sb-section-title"><i class="fa-solid fa-crosshairs" style="color:var(--accent);margin-right:6px;"></i> Actions & Attacks</div>
+            ${block.actions.map(a => `<div class="sb-action"><strong>${a.name}.</strong> ${a.detail}</div>`).join('')}
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function copyStatBlock() {
+      if (!activeMinion) return;
+      let text = `=== ${activeMinion.name} ===\n`;
+      text += `Type: ${activeMinion.type || 'Minion'}\n`;
+      text += `HP ${activeMinion.hp} | AC ${activeMinion.ac} | Init ${activeMinion.init} | Perception ${activeMinion.perception}\n`;
+      if (activeMinion.stats) text += `Stats: ${activeMinion.stats}\n`;
+      if (activeMinion.saves) text += `Saves: ${activeMinion.saves}\n`;
+      if (activeMinion.skills) text += `Skills: ${activeMinion.skills}\n`;
+      
+      if (activeMinion.traits && activeMinion.traits.length > 0) {
+        text += `\n--- Special Abilities & Spells ---\n`;
+        activeMinion.traits.forEach(t => text += `${t.name}: ${t.detail}\n`);
+      }
+      
+      if (activeMinion.actions && activeMinion.actions.length > 0) {
+        text += `\n--- Actions & Attacks ---\n`;
+        activeMinion.actions.forEach(a => text += `${a.name}: ${a.detail}\n`);
+      }
+
+      navigator.clipboard.writeText(text);
+      alert(`Copied "${activeMinion.name}" (with all abilities, damage cantrips & actions) to clipboard!`);
+    }
+
+    // Auto generate minion on page load
+    generateFodder();
+  </script>
+</body>
+</html>

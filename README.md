@@ -1,259 +1,74 @@
-# SceneSmith VTT
+# Scene Smith
 
-A heavily expanded fork of [MiniVTT](https://github.com/SamsterJam/MiniVTT) for running lightweight tabletop RPG sessions with a faster DM workflow, richer scene tools, and real-time player sync.
+> **The Lightweight Toolkit**
 
-SceneSmith VTT keeps the original "everything is a token" simplicity while adding a larger DM toolset: media organization, paint tools, initiative announcements, 3D dice, ruler mode, player-facing sync, music controls, sticky notes, and quality-of-life updates for running sessions quickly.
-
-Original project:  
-https://github.com/SamsterJam/MiniVTT
+Scene Smith is a fast, self-contained tabletop RPG virtual tabletop and campaign utility suite built on Python Flask and native HTML5/JS. It keeps session management simple while providing DMs and players with a complete suite of lightweight tools.
 
 ---
 
-## Features
+## The 8 Core Tools
 
-### Original MiniVTT Foundation
+1. **Player VTT** (`/player`)  
+   Join active game sessions, view scene maps, move allowed tokens, measure distances with ruler mode, and roll 3D dice with real-time network sync.
 
-These are the core ideas and baseline capabilities inherited from MiniVTT:
+2. **DM VTT** (`/dm`)  
+   Full Dungeon Master control: create scenes, place tokens, paint terrain, track initiative, manage music, push snap views, and drop pings.
 
-**Real-time DM/player sync** - Connected DM and player clients stay synchronized through Socket.IO.
+3. **DM Media Manager** (`/dmadmin`)  
+   Organize campaign media in folders, upload token images/videos, manage documents, view passwords, and add media directly to active scenes.
 
-**Everything is a token** - Maps, characters, monsters, props, and videos can be placed on the canvas as movable scene objects.
+4. **Player Files** (`/player-files`)  
+   Player-accessible media library for browsing and downloading session handouts, maps, images, and campaign documents. Includes a password-protected DM mode.
 
-**Scene management** - Create and switch between scenes during play.
+5. **Simple Dice Roller** (`/dice`)  
+   Standalone 3D physics dice roller for standard polyhedral dice (`d4` through `d100`), custom math formulas (`2d6+12`), and instant roll history.
 
-**Drag-and-drop canvas uploads** - Drop image or video files onto the VTT canvas to create scene tokens.
+6. **Token Stamp Creator** (`/token-stamp`)  
+   Crop artwork into custom token borders, adjust scale/pan, pick background colors, and save directly to your DM media library.
 
-**Token visibility and movement control** - Hide tokens from players and control whether players can interact with tokens.
+7. **Journal** (`/notes`)  
+   Dual-view campaign wiki with dedicated **Player Info** (public) and **DM Notes** (password-locked) sections, GFM rendering, search, and `[[wiki-links]]`.
 
-**Pan and zoom** - Navigate the scene with mouse controls.
-
-**Music support** - Upload and play music for connected clients.
-
-### Added In SceneSmith VTT
-
-These are the major additions and expansions in this fork:
-
-**Expanded DM toolbar and floating panels** - DM tools live in draggable panels with a right-side tray for Initiative, Paint, Effects, Dice, Music, and Notes.
-
-**DM Admin* - Organize reusable media in folders from `/dmadmin`. Upload images, videos, PDFs, and text documents. Shift-click downloads files, and double-clicking images/videos adds them to the active scene. Passwords can also be viewed.
-
-**Password management tab** - Change DM and player passwords from the Media Library password tab or by editing `data/private/secrets.txt`.
-
-**Improved token controls** - Duplicate, rotate, fine-rotate, change layer order, multi-select, and improved token drag behavior.
-
-**Grid upgrades** - Square/hex grid toggle, adjustable grid size.
-
-**Ruler mode** - Measures distance at 5 ft per grid cell.
-
-**Paint system** - Paint terrain tiles directly onto the scene with adjustable brush size, custom colors, eraser, and layer controls.
-
-**Initiative tracker** - Track turn order, edit names/values inline, advance rounds, and announce active turns with readable center-screen callouts visible to all players.
-
-**3D dice roller** - Roll common dice or expressions `2d6+12` Synced across the network. Slient rolls only happen for you.
-
-**Snap View** - DM can push their current camera position and zoom to connected players.
-
-**Scene ping** - Double-click the scene to place a temporary blue ping indicator visible to all connected clients. Works on the background and on tokens.
-
-**Sticky notes** - Private draggable notes pinned to the scene in world space. Persistent across sessions for DM's not players.
-
-**Player-side controls** - Player help modal, collapsible initiative sidebar, ruler, dice panel, sticky notes panel, and independent pan/zoom behavior.
-
-**Scene dropdown and pinned scenes** - Scenes are accessed through a dropdown menu rather than a horizontal scrollbar. Pin up to 5 frequently used scenes to the toolbar for one-click access and are saved. 
-
-**Effects tool** - Spawn transparent area-effect overlays directly on the canvas as standard tokens and can be animated.
-
-**Token lock** - Press `L` to lock a selected token. Locked tokens show a red outline, cannot be moved or resized by anyone, but remain selectable and deletable.
-
-**Player Files** - A player-accessible media library at `/player-files`. Players can browse and double-click any file to download it. A **DM Mode** toggle (requires DM password) unlocks upload, file deletion.
+8. **Cannon Fodder Maker** (`/bestiary`)  
+   Instant level 1–20 minion stat block generator with 6 class archetypes (**Grunt**, **Priest**, **Druid**, **Bard**, **Mage**, **Thief**), level-scaled damage cantrips, and one-click clipboard copying.
 
 ---
 
-## Installation
+## Quick Start
 
-### Easy Install (no Python required)
+### Easy Run (No Python pre-installed)
 
-Double-click `runEmbedded.bat`.
+Double-click `runEmbedded.bat`.  
+On first launch, it automatically downloads a self-contained Python runtime (~30 MB) and starts the server on port `3000`.
 
-On first run it downloads a self-contained Python runtime (~30 MB), installs dependencies, and launches the server automatically. Nothing needs to be installed on your machine beforehand. Subsequent runs start instantly using the cached runtime.
-
-> Internet access is required on the first run only.
-
-### virual Environment (Python already installed)
-
-**Requirements:** Python 3.8 or newer
-
-On Windows Double-click `runVirtualEnv.bat`.
-
-Manual Install:
+### Standard Python Run
 
 ```sh
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
-```
-
-Then start the server:
-
-```sh
 python app.py
 ```
 
-The server starts on port `3000` by default.
+### Server Access & Default Passwords
 
-Default URLs:
+- Portal Home: `http://localhost:3000/`
+- DM View: `http://localhost:3000/dm`
+- Player View: `http://localhost:3000/player`
+- **DM Password**: `DMCODE`
+- **Player Password**: `PLAY`
 
-- Player view: `http://localhost:3000`
-- Player Files: `http://localhost:3000/player-files`
-- DM view: `http://localhost:3000/dm`
-- DM Admin/Files: `http://localhost:3000/dmadmin`
-
-Default Passwords: 
-
-DM password: `DMCODE`
-Player password: `PLAY`
-
-Passwords are changed in DM Admin area
+*(Passwords can be changed inside DM Media Manager)*
 
 ---
 
-## Usage
+## Technology Stack
 
-### Quick Role Summary
-
-**DMs can:**
-- Create and manage scenes, tokens, maps, media, and music
-- Control visibility, movement permissions, grid, snap view, and initiative
-- Use paint, ruler, effects, dice, pings, and private sticky notes
-- Organize uploads and change DM/player passwords from the media library
-
-**Players can:**
-- View the active scene, visible tokens, grid, music, initiative, and callouts
-- Move allowed tokens, pan/zoom, ping the scene, and use ruler mode
-- Roll dice, place private sticky notes, and use private local effects
-- Collapse initiative and use the player help controls
-- Browse and download files from the Player Files library (`/player-files`)
-
-### DM View
-
-Open `/dm` to manage scenes, tokens, music, initiative, dice, paint tools, area effects, sticky notes, grid controls, and player view syncing. Scenes are selected from the dropdown in the toolbar; pin frequently used scenes for quick access.
-
-### Player View
-
-Players open `/` and see the active scene, visible tokens, initiative callouts, dice rolls, music, pings, and their own private sticky notes. A "Please Wait" screen is shown until the DM loads a scene.
-
-### DM Admin
-
-Open `/dmadmin` to upload and organize files and change passwords
-
-- Double-click an image or video to add it to the active scene.
-- Shift-click any file to download it.
-- PDFs and text documents display as icons.
-- Use the Passwords tab to update DM/player passwords.
-
-### Player Files
-
-Open `/player-files` for the player-facing media library.
-
-- Double-click any file to download it.
-- Click **DM Mode** and enter the DM password to unlock upload, delete, and folder management.
-- DM Mode stays active until you toggle it off or refresh the page.
-- Shift-click a file card (in DM Mode) to delete it.
-
-### Common DM Shortcuts
-
-- `Delete` - Delete selected token
-- `H` - Hide/show selected token from players
-- `I` - Toggle whether players can move selected token
-- `L` - Lock/unlock selected token (red outline, blocks movement and resize)
-- `[` / `]` - Move selected token down/up in layer order
-- `Ctrl+D` - Duplicate selected token
-- `Ctrl+Click` - Add token to selection (group select)
-- `Q` / `E` - Rotate selected token
-- `Shift+Q` / `Shift+E` - Fine rotate selected token
-- `T` - Toggle DM toolbar
-- `Shift+D` - Delete current scene
-- `Double-click` canvas or token - Ping location
-
-> Keyboard shortcuts are automatically disabled while typing in a sticky note.
-
-### Sticky Notes
-
-**DM notes** are accessible from the Notes button in the DM tool tray. They are pinned to world space (pan and zoom with the scene), persist to disk, and are never visible to players.
-
-**Player notes** are accessible from the Notes button in the player toolbar. They are stored in browser localStorage and are completely private.
-
-For both:
-- Enable the tool, then double-click empty scene area to place a note
-- Drag to reposition at any time
-- Resize from the bottom-right corner handle
-- Double-click note text to enter edit mode; click elsewhere to save
-- `Escape` exits edit mode or closes the notes panel
-- Choose a color (yellow, orange, cyan) from the Notes panel
-
----
-
-## Project Structure
-
-```txt
-.
-├── app.py
-├── requirements.txt
-├── data/
-│   └── scenes/
-├── public/
-│   ├── css/
-│   ├── js/
-│   ├── lib/
-│   │   └── dice-box-threejs/
-│   ├── dm.html
-│   ├── index.html
-│   ├── files.html
-│   ├── player-files.html
-│   ├── media/
-│   ├── music/
-│   └── uploads/
-├── Run_DND_VTT.bat
-└── data/private/secrets.txt
-```
-
-Runtime/user data folders are ignored by git:
-
-- `public/media/`
-- `public/music/`
-- `public/uploads/`
-- `data/scenes/`
-- `data/private/`
-
----
-
-## Built With
-
-- Python 3
-- Flask
-- Flask-SocketIO
-- Werkzeug
-- Socket.IO (client)
-- Interact.js
-- Font Awesome
-- Dice Box (Three.js renderer)
-
----
-
-## Security Disclaimer
-
-SceneSmith VTT is intended for trusted local games and private networks.
-
-It has not been security audited. File uploads, password handling, and WebSocket access are designed for convenience, not hardened public hosting. If you expose it to the internet, put it behind proper authentication, HTTPS/WSS, and a trusted reverse proxy.
-
-Use at your own risk.
+- **Backend**: Python 3, Flask, Flask-SocketIO, Werkzeug
+- **Frontend**: Vanilla JavaScript, HTML5 Canvas, Three.js (3D Dice), Font Awesome
 
 ---
 
 ## License
 
-SceneSmith VTT is a fork of MiniVTT by SamsterJam:
-
-https://github.com/SamsterJam/MiniVTT
-
-This project remains licensed under GPL-3.0.
+Scene Smith is licensed under **GPL-3.0**.

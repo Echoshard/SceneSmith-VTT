@@ -1,0 +1,271 @@
+{
+  "grunt": {
+    "title": "Frontline Warrior",
+    "baseHp": 12,
+    "hpPerLevel": 8,
+    "baseAc": 15,
+    "acScaleDivisor": 4,
+    "primaryStat": "STR",
+    "baseStatVal": 3,
+    "statScaleDivisor": 4,
+    "statsTemplate": "STR +{primary_mod} | DEX +1 | CON +3 | INT +0 | WIS +1 | CHA +0",
+    "savesTemplate": "STR +{str_save} | CON +{con_save}",
+    "skillsTemplate": "Athletics +{ath_skill}, Intimidation +2",
+    "actions": [
+      {
+        "name": "Heavy Sword",
+        "detail": "Melee | +{attack_mod} | 1d10+{primary_mod} slashing (DC {dc} STR or Prone)"
+      },
+      {
+        "name": "Heavy Crossbow",
+        "detail": "100/400FT | +{ranged_mod} | 1d10+1 piercing (pushes 10ft)"
+      }
+    ],
+    "traits": [
+      {
+        "name": "Second Wind (2/Day)",
+        "detail": "Bonus Action | Regain 1d10 + {level} HP (or move half speed)"
+      },
+      {
+        "name": "Shield Wall",
+        "detail": "Gains +2 AC when adjacent to another Grunt"
+      }
+    ],
+    "spells": {}
+  },
+
+  "thief": {
+    "title": "Rogue Skirmisher",
+    "baseHp": 9,
+    "hpPerLevel": 6,
+    "baseAc": 14,
+    "acScaleDivisor": 4,
+    "primaryStat": "DEX",
+    "baseStatVal": 3,
+    "statScaleDivisor": 4,
+    "statsTemplate": "STR +0 | DEX +{primary_mod} | CON +2 | INT +1 | WIS +1 | CHA +1",
+    "savesTemplate": "DEX +{dex_save} | INT +{int_save}",
+    "skillsTemplate": "Stealth +{stealth_skill}, Acrobatics +{acro_skill}",
+    "actions": [
+      {
+        "name": "Dual Daggers",
+        "detail": "Melee/Ranged (20/60FT) | +{attack_mod} | 1d4+{primary_mod} piercing + {sneak_dice}d6 Sneak"
+      }
+    ],
+    "traits": [
+      {
+        "name": "Cunning Action",
+        "detail": "Bonus Action | Dash, Disengage, or Hide"
+      },
+      {
+        "name": "Evasion",
+        "detail": "Half / No damage on DEX saves"
+      }
+    ],
+    "spells": {}
+  },
+
+  "priest": {
+    "title": "Cleric Priest",
+    "baseHp": 10,
+    "hpPerLevel": 7,
+    "baseAc": 16,
+    "acScaleDivisor": 5,
+    "primaryStat": "WIS",
+    "baseStatVal": 3,
+    "statScaleDivisor": 4,
+    "statsTemplate": "STR +1 | DEX +0 | CON +2 | INT +1 | WIS +{primary_mod} | CHA +1",
+    "savesTemplate": "WIS +{wis_save} | CHA +{cha_save}",
+    "skillsTemplate": "Religion +{rel_skill}, Medicine +{med_skill}, Perception +{per_skill}",
+    "actions": [
+      {
+        "name": "Sacred Flame",
+        "detail": "60FT | DC {dc} DEX | {cantrip_d8} radiant"
+      },
+      {
+        "name": "Toll the Dead",
+        "detail": "60FT | DC {dc} WIS | {cantrip_d8} ({cantrip_d12} if damaged) necrotic"
+      },
+      {
+        "name": "Word of Radiance",
+        "detail": "5FT Burst | DC {dc} CON | {cantrip_d6} radiant"
+      },
+      {
+        "name": "Guiding Bolt",
+        "detail": "120FT | +{attack_mod} | 4d6 radiant (next attack adv)"
+      },
+      {
+        "name": "Cure Wounds",
+        "detail": "30FT | Restore 2d8 + {primary_mod} HP"
+      }
+    ],
+    "traits": [
+      {
+        "name": "Divine Spellcasting",
+        "detail": "{spells}"
+      },
+      {
+        "name": "Divine Spark (2/Day)",
+        "detail": "Action | Heal or deal 1d8 + {primary_mod} Radiant/Necrotic"
+      },
+      {
+        "name": "Turn Undead",
+        "detail": "30FT | DC {dc} WIS save or Undead Frightened & Incapacitated 1 min"
+      }
+    ],
+    "spells": {
+      "cantrips": "Cantrips: Sacred Flame ({cantrip_d8}), Toll the Dead ({cantrip_d8}/{cantrip_d12}), Word of Radiance ({cantrip_d6}), Thaumaturgy, Guidance",
+      "level1": "1st Level (3/Day): Cure Wounds (2d8+{primary_mod}), Healing Word (2d4+{primary_mod}), Guiding Bolt (4d6), Bless, Sanctuary, Inflict Wounds (3d10)",
+      "level3": "2nd Level (3/Day): Spiritual Weapon (1d8+{primary_mod}), Prayer of Healing, Lesser Restoration, Aid, Hold Person, Silence",
+      "level5": "3rd Level (3/Day): Spirit Guardians (3d8 aura), Mass Healing Word, Revivify, Dispel Magic, Beacon of Hope",
+      "level7": "4th Level (3/Day): Death Ward, Guardian of Faith, Banishment, Control Water",
+      "level9": "5th Level (2/Day): Flame Strike (4d6 fire + 4d6 radiant), Mass Cure Wounds (3d8+{primary_mod}), Greater Restoration, Holy Weapon, Raise Dead"
+    }
+  },
+
+  "druid": {
+    "title": "Nature Druid",
+    "baseHp": 10,
+    "hpPerLevel": 7,
+    "baseAc": 15,
+    "acScaleDivisor": 5,
+    "primaryStat": "WIS",
+    "baseStatVal": 3,
+    "statScaleDivisor": 4,
+    "statsTemplate": "STR +0 | DEX +2 | CON +2 | INT +1 | WIS +{primary_mod} | CHA +0",
+    "savesTemplate": "WIS +{wis_save} | INT +{int_save}",
+    "skillsTemplate": "Nature +{rel_skill}, Survival +{med_skill}, Perception +{per_skill}",
+    "actions": [
+      {
+        "name": "Produce Flame",
+        "detail": "30FT | +{attack_mod} | {cantrip_d8} fire"
+      },
+      {
+        "name": "Thorn Whip",
+        "detail": "30FT | +{attack_mod} | {cantrip_d6} piercing (pulls 10ft)"
+      },
+      {
+        "name": "Shillelagh Strike",
+        "detail": "Melee | +{attack_mod} | {cantrip_d8}+{primary_mod} bludgeoning"
+      },
+      {
+        "name": "Cure Wounds",
+        "detail": "30FT | Restore 2d8 + {primary_mod} HP"
+      }
+    ],
+    "traits": [
+      {
+        "name": "Wild Shape",
+        "detail": "Bonus Action | Beast Form (+{level_temp_hp} Temp HP)"
+      },
+      {
+        "name": "Nature Spellcasting",
+        "detail": "{spells}"
+      }
+    ],
+    "spells": {
+      "cantrips": "Cantrips: Produce Flame ({cantrip_d8}), Thorn Whip ({cantrip_d6}), Shillelagh ({cantrip_d8}), Frostbite ({cantrip_d6}), Guidance",
+      "level1": "1st Level (3/Day): Cure Wounds (2d8+{primary_mod}), Healing Word (2d4+{primary_mod}), Entangle (DC {dc}), Goodberry, Thunderwave",
+      "level3": "2nd Level (3/Day): Spike Growth (2d4/5ft), Moonbeam (2d10), Barkskin (AC 16), Pass Without Trace",
+      "level5": "3rd Level (3/Day): Call Lightning (3d10), Plant Growth, Sleet Storm, Revivify",
+      "level7": "4th Level (3/Day): Ice Storm (2d8+4d6), Polymorph, Grasping Vine",
+      "level9": "5th Level (2/Day): Commune with Nature, Tree Stride, Wrath of Nature"
+    }
+  },
+
+  "bard": {
+    "title": "Support Bard",
+    "baseHp": 9,
+    "hpPerLevel": 6,
+    "baseAc": 15,
+    "acScaleDivisor": 4,
+    "primaryStat": "CHA",
+    "baseStatVal": 3,
+    "statScaleDivisor": 4,
+    "statsTemplate": "STR +0 | DEX +2 | CON +1 | INT +1 | WIS +1 | CHA +{primary_mod}",
+    "savesTemplate": "DEX +{dex_save} | CHA +{cha_save}",
+    "skillsTemplate": "Performance +{per_skill}, Deception +{per_skill}, Persuasion +{per_skill}",
+    "actions": [
+      {
+        "name": "Vicious Mockery",
+        "detail": "60FT | DC {dc} WIS | {cantrip_d6} psychic (target disadv)"
+      },
+      {
+        "name": "Thunderclap",
+        "detail": "5FT Burst | DC {dc} CON | {cantrip_d6} thunder"
+      },
+      {
+        "name": "True Strike",
+        "detail": "Melee/Ranged | +{attack_mod} | 1d8+{primary_mod} + {cantrip_d6} radiant"
+      },
+      {
+        "name": "Rapier Strike",
+        "detail": "Melee | +{attack_mod} | 1d8+{primary_mod} piercing"
+      }
+    ],
+    "traits": [
+      {
+        "name": "Bardic Inspiration",
+        "detail": "Bonus Action/Reaction | Grant ally +1d8 die"
+      },
+      {
+        "name": "Bardic Spellcasting",
+        "detail": "{spells}"
+      }
+    ],
+    "spells": {
+      "cantrips": "Cantrips: Vicious Mockery ({cantrip_d6}), Thunderclap ({cantrip_d6}), True Strike ({cantrip_d6}), Minor Illusion, Friends",
+      "level1": "1st Level (3/Day): Cure Wounds (2d8+{primary_mod}), Healing Word (2d4+{primary_mod}), Dissonant Whispers (3d6), Tasha's Hideous Laughter, Faerie Fire",
+      "level3": "2nd Level (3/Day): Shatter (3d8), Suggestion, Invisibility, Silence",
+      "level5": "3rd Level (3/Day): Hypnotic Pattern (DC {dc}), Dispel Magic, Major Image, Leomund's Tiny Hut",
+      "level7": "4th Level (3/Day): Dimension Door, Greater Invisibility, Compulsion",
+      "level9": "5th Level (2/Day): Hold Monster, Synaptic Static (8d6), Modify Memory"
+    }
+  },
+
+  "mage": {
+    "title": "Arcane Spellcaster",
+    "baseHp": 8,
+    "hpPerLevel": 5,
+    "baseAc": 13,
+    "acScaleDivisor": 5,
+    "primaryStat": "INT",
+    "baseStatVal": 3,
+    "statScaleDivisor": 4,
+    "statsTemplate": "STR +0 | DEX +2 | CON +2 | INT +{primary_mod} | WIS +1 | CHA +0",
+    "savesTemplate": "INT +{int_save} | WIS +{wis_save}",
+    "skillsTemplate": "Arcana +{arc_skill}, History +{hist_skill}",
+    "actions": [
+      {
+        "name": "Fire Bolt",
+        "detail": "120FT | +{attack_mod} | {cantrip_d10} fire"
+      },
+      {
+        "name": "Ray of Frost",
+        "detail": "60FT | +{attack_mod} | {cantrip_d8} cold (-10ft speed)"
+      },
+      {
+        "name": "Shocking Grasp",
+        "detail": "Melee | +{attack_mod} | {cantrip_d8} lightning (no reactions)"
+      },
+      {
+        "name": "Fireball",
+        "detail": "150FT (20ft sphere) | DC {dc} DEX | 8d6 fire"
+      }
+    ],
+    "traits": [
+      {
+        "name": "Arcane Spellcasting",
+        "detail": "{spells}"
+      }
+    ],
+    "spells": {
+      "cantrips": "Cantrips: Fire Bolt ({cantrip_d10}), Ray of Frost ({cantrip_d8}), Shocking Grasp ({cantrip_d8}), Acid Splash ({cantrip_d6}), Mage Hand",
+      "level1": "1st Level (3/Day): Magic Missile, Shield, Thunderwave, Burning Hands",
+      "level3": "2nd Level (3/Day): Misty Step, Scorching Ray (3x 2d6), Mirror Image, Shatter",
+      "level5": "3rd Level (3/Day): Fireball (8d6), Counterspell, Lightning Bolt, Haste",
+      "level7": "4th Level (3/Day): Dimension Door, Ice Storm (2d8+4d6), Polymorph, Greater Invisibility",
+      "level9": "5th Level (2/Day): Cone of Cold (8d8), Telekinesis, Wall of Force"
+    }
+  }
+}

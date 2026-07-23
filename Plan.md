@@ -1,22 +1,31 @@
-Objective:
+# SceneSmith VTT & Portal Architecture
 
-I am building a website for visuals to run my DND game this is going to be on a TV, I will want to be able to switch between landscape and portrait mode. 
+SceneSmith VTT is a Python Flask + WebSockets Virtual Tabletop engine equipped with an 8-tool portal system for D&D / TTRPG session management.
 
-I will be able to do two things , Load in images which I can move and resize, and I will be able to load in a background image that will be the base of the screen. Then apply effects to the images, like opacity, and maybe some filters. like clouds,fog fire, magical mist etc. 
+---
 
-These are all applyed in Design mode, which I can set scenes and save them on the side, in a simple JSON doc, Like power point slides I can switch between them by pressing CTRL + [ and CTRL + ] in presentation mode.
+## Complete 8-Tool Portal Suite
 
-I will also have a paint mode where I can paint stone tiles, grass, dirt, sand, water, lava, and pillars, doors and tables and stars for points of interist. 
+1. **Player View** (`/player`)
+   - Interactive VTT map canvas & token view for player displays.
+2. **DM View** (`/dm`)
+   - DM control panel, scene builder, fog of war, weather particles, & terrain brush.
+3. **DM Media Manager** (`/dmadmin`)
+   - Media folder browser, upload center, asset manager, and password settings.
+4. **Player Files** (`/player-files`)
+   - Shared player handouts, maps, documents, and reference PDFs.
+5. **Simple Dice Roller** (`/dice`)
+   - 3D physics dice roller powered by Three.js with Advantage/Disadvantage and roll history.
+6. **Token Stamp Creator** (`/token-stamp`)
+   - HTML5 Canvas token creator with Circle, Hexagon, Octagon, Square, and Ring borders.
+7. **Inkwell Dual Wiki** (`/notes` / `/player-notes`)
+   - Inkwell-style dual wiki with private DM Notes & public Player Info, drag-and-drop image upload, sidebar folder CRUD, connected scrolling, and TTS read aloud.
+8. **5e Bestiary & Cannon Fodder Generator** (`/bestiary`)
+   - 5e.tools-styled stat block card viewer with preset monsters (Cannon Fodder, Hover Drone, Mercenary) and a level 1–20 Mage, Grunt, and Thief generator.
 
-A preview will be seen on the side bar, 
+---
 
-Allow me also to turn on and off the grid and size it globally.
+## Server Deployment
 
-
-Then there is the play mode, which is what I will be using during the game. I can switch between scenes by pressing CTRL + [ and CTRL + ]
-
-in Play Mode I will be able to do the following. It will just show the image and a small gear at the top of the screen which will open up the Initi tracker.
-
-For this I will have a player's name and their Init order I can then press Alt+[ and Alt+] to go back and forth in the init order. When that happens I want a slide in effect showing the players name a sort of furlish. 
-
-This gear also allows me to leave play mode and go back to design mode.
+- **Render 100% Free Tier**: Pre-configured via [render.yaml](file:///u:/GitHub/DocTest/SceneSmith-VTT/render.yaml).
+- **Execution**: Run via `runEmbedded.bat` locally or deploy via GitHub to Render.

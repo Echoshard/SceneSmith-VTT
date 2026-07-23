@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SceneSmith - Token Stamp Creator</title>
+  <link rel="icon" type="image/png" href="SceneSmith.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    :root {
+      --bg: #08080c;
+      --panel: #12121a;
+      --border: rgba(255, 255, 255, 0.12);
+      --accent: #00a2ff;
+      --accent-glow: rgba(0, 162, 255, 0.35);
+      --text: #f0f0f5;
+      --text-muted: #9999aa;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px;
+    }
+
+    .top-nav {
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .back-btn {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      color: var(--text);
+      border-color: var(--accent);
+      background: rgba(0, 162, 255, 0.1);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 960px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        grid-template-columns: 340px 1fr;
+      }
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+    }
+
+    .control-group {
+      margin-bottom: 18px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .upload-btn {
+      width: 100%;
+      background: #1a1a26;
+      border: 1px dashed var(--accent);
+      border-radius: 8px;
+      padding: 16px;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .upload-btn:hover {
+      background: rgba(0, 162, 255, 0.15);
+    }
+
+    .shape-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .shape-btn {
+      background: #181824;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 10px 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+
+    .shape-btn.active {
+      background: rgba(0, 162, 255, 0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .color-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 6px;
+      cursor: pointer;
+      background: none;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+
+    .canvas-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #181824;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 30px;
+      min-height: 400px;
+      position: relative;
+    }
+
+    #tokenCanvas {
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><rect width="10" height="10" fill="%231a1a24"/><rect x="10" width="10" height="10" fill="%2314141e"/><rect y="10" width="10" height="10" fill="%2314141e"/><rect x="10" y="10" width="10" height="10" fill="%231a1a24"/></svg>');
+      border-radius: 8px;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    #tokenCanvas:active {
+      cursor: grabbing;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #181824;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .action-btn.primary:hover {
+      background: #0070f3;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+
+    .action-btn:hover:not(.primary) {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-nav">
+    <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Home Portal</a>
+    <span style="font-size:0.9rem;color:var(--text-muted);">SceneSmith Token Stamp Creator</span>
+  </div>
+
+  <div class="container">
+    <!-- Controls Panel -->
+    <div class="card">
+      <h2><i class="fa-solid fa-palette"></i> Stamp Controls</h2>
+
+      <!-- Upload Button -->
+      <div class="control-group">
+        <label>Character Art Image</label>
+        <button class="upload-btn" onclick="document.getElementById('artUpload').click()">
+          <i class="fa-solid fa-upload"></i> Upload Image
+        </button>
+        <input type="file" id="artUpload" accept="image/*" onchange="loadArt(event)">
+      </div>
+
+      <!-- Frame Shape -->
+      <div class="control-group">
+        <label>Frame Shape</label>
+        <div class="shape-grid">
+          <button class="shape-btn active" id="shape-circle" onclick="setShape('circle')">Circle</button>
+          <button class="shape-btn" id="shape-hex" onclick="setShape('hex')">Hex</button>
+          <button class="shape-btn" id="shape-octagon" onclick="setShape('octagon')">Octagon</button>
+          <button class="shape-btn" id="shape-square" onclick="setShape('square')">Square</button>
+          <button class="shape-btn" id="shape-ring" onclick="setShape('ring')">Ring</button>
+        </div>
+      </div>
+
+      <!-- Zoom Slider -->
+      <div class="control-group">
+        <label>Zoom / Scale (<span id="zoomVal">100%</span>)</label>
+        <input type="range" id="zoomSlider" min="20" max="300" value="100" oninput="updateZoom(this.value)">
+      </div>
+
+      <!-- Background Color -->
+      <div class="control-group">
+        <label>Background Color</label>
+        <div class="color-row">
+          <input type="color" id="bgColor" value="#000000" onchange="renderToken()">
+          <span style="font-size:0.85rem;color:var(--text-muted);">Token Fill Color</span>
+        </div>
+      </div>
+
+      <!-- Border Color & Width -->
+      <div class="control-group">
+        <label>Border Tint & Size</label>
+        <div class="color-row">
+          <input type="color" id="borderColor" value="#00a2ff" onchange="renderToken()">
+          <input type="range" id="borderWidth" min="2" max="30" value="12" oninput="renderToken()">
+        </div>
+      </div>
+
+      <!-- Overlay Tint & Opacity -->
+      <div class="control-group">
+        <label>Overlay Tint Opacity</label>
+        <div class="color-row">
+          <input type="color" id="overlayColor" value="#00a2ff" onchange="renderToken()">
+          <input type="range" id="overlayOpacity" min="0" max="100" value="0" oninput="renderToken()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Canvas Preview Card -->
+    <div class="card" style="display:flex;flex-direction:column;align-items:center;">
+      <h2><i class="fa-solid fa-eye"></i> Token Preview</h2>
+      <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:14px;text-align:center;">Drag & drop image file onto canvas &bull; Drag to position &bull; Scroll wheel to zoom</div>
+
+      <div class="canvas-container">
+        <canvas id="tokenCanvas" width="360" height="360"></canvas>
+      </div>
+
+      <div class="action-row">
+        <button class="action-btn" onclick="downloadToken()"><i class="fa-solid fa-download"></i> Download PNG</button>
+        <button class="action-btn primary" onclick="saveToLibrary()"><i class="fa-solid fa-folder-plus"></i> Save to DM Media</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('tokenCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let currentImg = null;
+    let imgX = canvas.width / 2;
+    let imgY = canvas.height / 2;
+    let scale = 1.0;
+    let activeShape = 'circle';
+
+    let isDragging = false;
+    let startX = 0, startY = 0;
+
+    function loadArt(evt) {
+      const file = evt.target.files[0];
+      processImageFile(file);
+    }
+
+    function processImageFile(file) {
+      if (!file || !file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          currentImg = img;
+          imgX = canvas.width / 2;
+          imgY = canvas.height / 2;
+          scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+          document.getElementById('zoomSlider').value = Math.round(scale * 100);
+          document.getElementById('zoomVal').textContent = Math.round(scale * 100) + '%';
+          renderToken();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Drag & Drop File Upload onto Canvas or Container
+    const canvasContainer = document.querySelector('.canvas-container');
+    const uploadBtn = document.querySelector('.upload-btn');
+
+    [canvasContainer, uploadBtn, canvas].forEach(element => {
+      if (!element) return;
+      element.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        element.style.borderColor = 'var(--accent)';
+      });
+
+      element.addEventListener('dragleave', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        element.style.borderColor = '';
+      });
+
+      element.addEventListener('drop', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        element.style.borderColor = '';
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          processImageFile(e.dataTransfer.files[0]);
+        }
+      });
+    });
+
+    function setShape(shape) {
+      activeShape = shape;
+      ['circle', 'hex', 'octagon', 'square', 'ring'].forEach(s => {
+        document.getElementById('shape-' + s).classList.toggle('active', s === shape);
+      });
+      renderToken();
+    }
+
+    function updateZoom(val) {
+      scale = val / 100;
+      document.getElementById('zoomVal').textContent = val + '%';
+      renderToken();
+    }
+
+    // Mouse & Touch Dragging
+    canvas.addEventListener('mousedown', e => {
+      isDragging = true;
+      startX = e.clientX - imgX;
+      startY = e.clientY - imgY;
+    });
+
+    window.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      imgX = e.clientX - startX;
+      imgY = e.clientY - startY;
+      renderToken();
+    });
+
+    window.addEventListener('mouseup', () => isDragging = false);
+
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.05 : 0.95;
+      scale = Math.min(Math.max(scale * zoomFactor, 0.1), 4.0);
+      document.getElementById('zoomSlider').value = Math.round(scale * 100);
+      document.getElementById('zoomVal').textContent = Math.round(scale * 100) + '%';
+      renderToken();
+    });
+
+    function renderToken() {
+      const w = canvas.width;
+      const h = canvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const r = w / 2 - 10;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const bgColor = document.getElementById('bgColor').value;
+      const borderColor = document.getElementById('borderColor').value;
+      const borderWidth = parseInt(document.getElementById('borderWidth').value);
+      const overlayColor = document.getElementById('overlayColor').value;
+      const overlayOpacity = parseInt(document.getElementById('overlayOpacity').value) / 100;
+
+      // 1. Create Clipping Mask Path
+      ctx.save();
+      ctx.beginPath();
+
+      if (activeShape === 'circle' || activeShape === 'ring') {
+        ctx.arc(cx, cy, r - borderWidth / 2, 0, Math.PI * 2);
+      } else if (activeShape === 'square') {
+        const side = r * 1.6;
+        ctx.rect(cx - side/2, cy - side/2, side, side);
+      } else if (activeShape === 'hex') {
+        for (let i = 0; i < 6; i++) {
+          const angle = (Math.PI / 3) * i;
+          const px = cx + (r - borderWidth/2) * Math.cos(angle);
+          const py = cy + (r - borderWidth/2) * Math.sin(angle);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+      } else if (activeShape === 'octagon') {
+        for (let i = 0; i < 8; i++) {
+          const angle = (Math.PI / 4) * i + Math.PI / 8;
+          const px = cx + (r - borderWidth/2) * Math.cos(angle);
+          const py = cy + (r - borderWidth/2) * Math.sin(angle);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+      }
+
+      ctx.fillStyle = bgColor;
+      ctx.fill();
+      ctx.clip();
+
+      // 2. Draw Image inside Mask
+      if (currentImg) {
+        ctx.save();
+        ctx.translate(imgX, imgY);
+        ctx.scale(scale, scale);
+        ctx.drawImage(currentImg, -currentImg.width / 2, -currentImg.height / 2);
+        ctx.restore();
+      } else {
+        ctx.fillStyle = '#1e1e2c';
+        ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = '#666';
+        ctx.font = '16px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText('Upload Character Art', cx, cy);
+      }
+
+      // 3. Draw Overlay Tint
+      if (overlayOpacity > 0) {
+        ctx.fillStyle = overlayColor;
+        ctx.globalAlpha = overlayOpacity;
+        ctx.fillRect(0, 0, w, h);
+        ctx.globalAlpha = 1.0;
+      }
+
+      ctx.restore();
+
+      // 4. Draw Border Frame
+      ctx.save();
+      ctx.beginPath();
+      if (activeShape === 'circle' || activeShape === 'ring') {
+        ctx.arc(cx, cy, r - borderWidth / 2, 0, Math.PI * 2);
+      } else if (activeShape === 'square') {
+        const side = r * 1.6;
+        ctx.rect(cx - side/2, cy - side/2, side, side);
+      } else if (activeShape === 'hex') {
+        for (let i = 0; i < 6; i++) {
+          const angle = (Math.PI / 3) * i;
+          const px = cx + (r - borderWidth/2) * Math.cos(angle);
+          const py = cy + (r - borderWidth/2) * Math.sin(angle);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+      } else if (activeShape === 'octagon') {
+        for (let i = 0; i < 8; i++) {
+          const angle = (Math.PI / 4) * i + Math.PI / 8;
+          const px = cx + (r - borderWidth/2) * Math.cos(angle);
+          const py = cy + (r - borderWidth/2) * Math.sin(angle);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+      }
+
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = borderWidth;
+      ctx.stroke();
+
+      if (activeShape === 'ring') {
+        ctx.beginPath();
+        ctx.arc(cx, cy, r - borderWidth * 1.2, 0, Math.PI * 2);
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function downloadToken() {
+      const link = document.createElement('a');
+      link.download = 'stamped_token.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    async function saveToLibrary() {
+      const dataUrl = canvas.toDataURL('image/png');
+      try {
+        const response = await fetch('/saveTokenStamp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: dataUrl })
+        });
+        const result = await response.json();
+        if (result && result.ok) {
+          alert('Token saved to DM Media Library! Path: ' + result.url);
+        } else {
+          alert('Failed to save token: ' + (result.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Error saving token to library.');
+      }
+    }
+
+    // Initial render
+    renderToken();
+  </script>
+</body>
+</html>

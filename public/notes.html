@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scene Smith - Journal</title>
+  <link rel="icon" type="image/png" href="SceneSmith.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0d0d12;
+      --sidebar: #13131a;
+      --panel: #181822;
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #00a2ff;
+      --accent-glow: rgba(0, 162, 255, 0.25);
+      --text: #e6e6f0;
+      --text-muted: #888899;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top App Header */
+    .app-header {
+      height: 52px;
+      background: var(--sidebar);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    /* Section Switcher Tabs */
+    .section-tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .tab-btn.locked {
+      display: none;
+    }
+
+    .doc-title-input {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+
+    .doc-title-input:hover:not([readonly]), .doc-title-input:focus:not([readonly]) {
+      border-color: var(--border);
+      background: #1a1a26;
+      outline: none;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .icon-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .icon-btn.primary:hover {
+      background: #0070f3;
+    }
+
+    .icon-btn.tts-active {
+      background: #ff5555;
+      border-color: #ff5555;
+      color: #fff;
+    }
+
+    /* Main Workspace Layout */
+    .workspace {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Left Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .sidebar-actions i {
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: color 0.15s ease;
+    }
+
+    .sidebar-actions i:hover {
+      color: var(--accent);
+    }
+
+    .search-box {
+      padding: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .search-input {
+      width: 100%;
+      background: #181824;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 10px;
+      color: var(--text);
+      font-size: 0.85rem;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .sidebar-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+
+    .folder-group {
+      margin-bottom: 6px;
+    }
+
+    .folder-header {
+      padding: 6px 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.15s ease;
+    }
+
+    .folder-header:hover {
+      background: rgba(0, 162, 255, 0.1);
+    }
+
+    .folder-header .del-folder-btn {
+      opacity: 0;
+      color: #ff5555;
+      font-size: 0.75rem;
+    }
+
+    .folder-header:hover .del-folder-btn {
+      opacity: 1;
+    }
+
+    .folder-contents {
+      padding-left: 12px;
+      margin-top: 2px;
+    }
+
+    .doc-item {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
+      transition: all 0.15s ease;
+    }
+
+    .doc-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+    }
+
+    .doc-item.active {
+      background: rgba(0, 162, 255, 0.15);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .doc-item .del-btn {
+      opacity: 0;
+      color: #ff5555;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .doc-item:hover .del-btn {
+      opacity: 1;
+    }
+
+    /* Editor Split Panes */
+    .editor-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+      background: var(--panel);
+      position: relative;
+    }
+
+    .editor-pane.drag-over {
+      border: 2px dashed var(--accent);
+      background: rgba(0, 162, 255, 0.05);
+    }
+
+    .preview-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      overflow-y: auto;
+      padding: 24px 32px;
+      transition: all 0.2s ease;
+    }
+
+    /* Viewer Mode Default Full-Width Layout */
+    .workspace.viewer-mode .editor-pane {
+      display: none !important;
+    }
+
+    .workspace.viewer-mode .preview-pane {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 36px 48px;
+    }
+
+    .toolbar {
+      height: 38px;
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 8px;
+    }
+
+    .tb-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+
+    .tb-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+
+    .editor-textarea {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Fira Code', monospace;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      padding: 20px;
+      resize: none;
+      tab-size: 2;
+      overflow-y: auto;
+    }
+
+    /* Parsedown Output Markdown Styling */
+    .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+      color: var(--accent);
+      margin-top: 1.2em;
+      margin-bottom: 0.6em;
+      font-weight: 700;
+    }
+    .markdown-body h1 { font-size: 1.8rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3em; }
+    .markdown-body h2 { font-size: 1.4rem; }
+    .markdown-body h3 { font-size: 1.1rem; }
+    .markdown-body p { margin-bottom: 1em; line-height: 1.6; color: #d0d0e0; }
+    .markdown-body ul, .markdown-body ol { margin-left: 1.5em; margin-bottom: 1em; }
+    .markdown-body li { margin-bottom: 0.3em; }
+    .markdown-body img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin: 12px 0;
+      border: 1px solid var(--border);
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--accent);
+      padding-left: 14px;
+      color: #aaaabb;
+      font-style: italic;
+      margin: 1em 0;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1em 0;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(0, 162, 255, 0.15);
+      color: var(--accent);
+    }
+    .markdown-body code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+    }
+    .markdown-body pre {
+      background: #12121a;
+      padding: 14px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1em 0;
+      border: 1px solid var(--border);
+    }
+    .markdown-body pre code { background: none; padding: 0; }
+
+    /* Wiki Links Styling */
+    a.wiki-link {
+      color: #00a2ff;
+      background: rgba(0, 162, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid rgba(0, 162, 255, 0.3);
+      transition: all 0.15s ease;
+    }
+
+    a.wiki-link:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* Modal dialog */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    .modal-box {
+      background: #181824;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      width: 320px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    .modal-box h3 {
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+      color: var(--accent);
+    }
+    .modal-box input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      background: #101018;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+    .modal-box .btn-row {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Bar -->
+  <div class="app-header">
+    <div class="header-left">
+      <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Home Portal</a>
+      
+      <!-- Dual Wiki Section Switcher -->
+      <div class="section-tabs">
+        <button class="tab-btn active" id="tab-player" onclick="switchSection('player')">
+          <i class="fa-solid fa-users"></i> Player Info
+        </button>
+        <button class="tab-btn locked" id="tab-dm" onclick="switchSection('dm')">
+          <i class="fa-solid fa-user-ninja"></i> DM Notes
+        </button>
+      </div>
+
+      <input type="text" id="docTitle" class="doc-title-input" value="Campaign_Overview" readonly onchange="renameActiveDoc(this.value)">
+    </div>
+
+    <div class="header-actions">
+      <span id="saveStatus" style="font-size:0.8rem;color:var(--text-muted);margin-right:6px;">Viewer Mode</span>
+      
+      <!-- TTS Read Aloud Button -->
+      <button class="icon-btn" id="ttsBtn" onclick="toggleTTS()" title="Text-To-Speech Read Aloud">
+        <i class="fa-solid fa-volume-high"></i> Listen
+      </button>
+
+      <!-- DM Login / Unlock Button -->
+      <button class="icon-btn" id="dmLoginBtn" onclick="openDmLoginModal()">
+        <i class="fa-solid fa-lock"></i> DM Edit Mode
+      </button>
+
+      <!-- View/Editor Mode Toggle (Visible after DM unlock) -->
+      <button class="icon-btn" id="viewModeBtn" style="display:none;" onclick="toggleViewMode()">
+        <i class="fa-solid fa-pen-to-square"></i> Editor Mode
+      </button>
+
+      <!-- Save Button (DM only) -->
+      <button class="icon-btn primary" id="saveBtn" style="display:none;" onclick="saveActiveDoc()">
+        <i class="fa-solid fa-floppy-disk"></i> Save
+      </button>
+
+      <button class="icon-btn" onclick="downloadDoc()">
+        <i class="fa-solid fa-download"></i> Export .md
+      </button>
+    </div>
+  </div>
+
+  <!-- Workspace Starts in Viewer Mode by Default -->
+  <div class="workspace viewer-mode">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <span id="sectionHeaderLabel">Player Info Wiki</span>
+        <div class="sidebar-actions" id="sidebarActions" style="display:none;">
+          <i class="fa-solid fa-folder-plus" title="New Folder" onclick="createNewFolder()"></i>
+          <i class="fa-solid fa-file-circle-plus" title="New Article" onclick="createNewDoc()"></i>
+        </div>
+      </div>
+
+      <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search articles..." oninput="filterDocList()">
+      </div>
+
+      <div class="sidebar-list" id="docList">
+        <!-- Folders and document items injected here -->
+      </div>
+    </div>
+
+    <!-- Editor Pane (Left - Hidden in Viewer Mode) -->
+    <div class="editor-pane" id="editorPane">
+      <div class="toolbar">
+        <button class="tb-btn" title="Bold" onclick="insertMarkdown('**', '**')"><i class="fa-solid fa-bold"></i></button>
+        <button class="tb-btn" title="Italic" onclick="insertMarkdown('*', '*')"><i class="fa-solid fa-italic"></i></button>
+        <button class="tb-btn" title="Heading 1" onclick="insertMarkdown('# ', '')">H1</button>
+        <button class="tb-btn" title="Heading 2" onclick="insertMarkdown('## ', '')">H2</button>
+        <button class="tb-btn" title="Unordered List" onclick="insertMarkdown('- ', '')"><i class="fa-solid fa-list-ul"></i></button>
+        <button class="tb-btn" title="Quote" onclick="insertMarkdown('> ', '')"><i class="fa-solid fa-quote-right"></i></button>
+        <button class="tb-btn" title="Code Block" onclick="insertMarkdown('```\n', '\n```')"><i class="fa-solid fa-code"></i></button>
+        <button class="tb-btn" title="Table" onclick="insertMarkdown('| Col 1 | Col 2 |\n| --- | --- |\n| Val 1 | Val 2 |\n', '')"><i class="fa-solid fa-table"></i></button>
+        <button class="tb-btn" title="Wiki Link [[Article]]" onclick="insertMarkdown('[[', ']]')"><i class="fa-solid fa-link"></i></button>
+        <span style="font-size:0.75rem;color:var(--text-muted);margin-left:auto;margin-right:6px;">Drag & drop image onto editor to upload</span>
+      </div>
+      <textarea id="editorTextarea" class="editor-textarea" placeholder="Type Markdown here... Use [[Article Name]] for Inkwell wiki links! Drag & drop images here to upload."></textarea>
+    </div>
+
+    <!-- Preview Pane (Right) -->
+    <div class="preview-pane markdown-body" id="previewPane">
+      <!-- Live Parsedown rendered HTML -->
+    </div>
+  </div>
+
+  <!-- DM Login Modal -->
+  <div id="dmModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <h3><i class="fa-solid fa-lock"></i> DM Authentication</h3>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">Enter Dungeon Master password to unlock editing and DM Notes:</p>
+      <input type="password" id="dmPassInput" placeholder="DM Password" onkeydown="if(event.key==='Enter') submitDmLogin()">
+      <div class="btn-row">
+        <button class="icon-btn" onclick="closeDmLoginModal()">Cancel</button>
+        <button class="icon-btn primary" onclick="submitDmLogin()">Unlock DM Mode</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentSection = 'player';
+    let activeDocName = 'Campaign_Overview';
+    let folderData = { folders: [], rootFiles: [] };
+    let saveDebounce = null;
+    let isDm = false;
+    let isViewerMode = true;
+
+    const textarea = document.getElementById('editorTextarea');
+    const preview = document.getElementById('previewPane');
+    const titleInput = document.getElementById('docTitle');
+    const statusEl = document.getElementById('saveStatus');
+
+    /* ── 1. CONNECTED SCROLLING ─────────────────────────────────────────────── */
+    let isSyncingScroll = false;
+    textarea.addEventListener('scroll', () => {
+      if (isSyncingScroll || isViewerMode) return;
+      isSyncingScroll = true;
+      const percentage = textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight || 1);
+      preview.scrollTop = percentage * (preview.scrollHeight - preview.clientHeight);
+      setTimeout(() => isSyncingScroll = false, 50);
+    });
+
+    preview.addEventListener('scroll', () => {
+      if (isSyncingScroll || isViewerMode) return;
+      isSyncingScroll = true;
+      const percentage = preview.scrollTop / (preview.scrollHeight - preview.clientHeight || 1);
+      textarea.scrollTop = percentage * (textarea.scrollHeight - textarea.clientHeight);
+      setTimeout(() => isSyncingScroll = false, 50);
+    });
+
+    /* ── 2. DRAG & DROP IMAGE UPLOADING ──────────────────────────────────────── */
+    const editorPane = document.getElementById('editorPane');
+    ['dragover', 'dragenter'].forEach(eventName => {
+      editorPane.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        editorPane.classList.add('drag-over');
+      });
+    });
+
+    ['dragleave', 'dragend'].forEach(eventName => {
+      editorPane.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        editorPane.classList.remove('drag-over');
+      });
+    });
+
+    editorPane.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      editorPane.classList.remove('drag-over');
+
+      if (!isDm) {
+        alert('DM Edit Mode required to upload images.');
+        return;
+      }
+
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        const file = files[0];
+        if (!file.type.startsWith('image/')) {
+          alert('Please drop an image file.');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+          statusEl.textContent = 'Uploading image...';
+          const res = await fetch('/uploadWikiImage', {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+          if (data.ok && data.url) {
+            insertMarkdown(`![${file.name}](${data.url})\n`, '');
+            statusEl.textContent = 'Image uploaded';
+          } else {
+            alert('Image upload failed: ' + (data.error || 'Unknown error'));
+            statusEl.textContent = 'Upload failed';
+          }
+        } catch (err) {
+          alert('Image upload error.');
+          statusEl.textContent = 'Upload error';
+        }
+      }
+    });
+
+    /* ── 3. TEXT-TO-SPEECH (TTS) SYSTEM ──────────────────────────────────────── */
+    let ttsUtterance = null;
+    let isSpeaking = false;
+
+    function toggleTTS() {
+      const btn = document.getElementById('ttsBtn');
+      if (isSpeaking) {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        btn.classList.remove('tts-active');
+        btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Listen';
+      } else {
+        const textToRead = preview.innerText;
+        if (!textToRead.trim()) return;
+
+        window.speechSynthesis.cancel();
+        ttsUtterance = new SpeechSynthesisUtterance(textToRead);
+        ttsUtterance.rate = 1.0;
+        ttsUtterance.pitch = 1.0;
+
+        ttsUtterance.onend = () => {
+          isSpeaking = false;
+          btn.classList.remove('tts-active');
+          btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Listen';
+        };
+
+        ttsUtterance.onerror = () => {
+          isSpeaking = false;
+          btn.classList.remove('tts-active');
+          btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Listen';
+        };
+
+        window.speechSynthesis.speak(ttsUtterance);
+        isSpeaking = true;
+        btn.classList.add('tts-active');
+        btn.innerHTML = '<i class="fa-solid fa-circle-stop"></i> Stop TTS';
+      }
+    }
+
+    function stopTTS() {
+      if (isSpeaking) {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        const btn = document.getElementById('ttsBtn');
+        btn.classList.remove('tts-active');
+        btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Listen';
+      }
+    }
+
+    /* ── 4. WIKI SECTIONS & FOLDER CRUD ──────────────────────────────────────── */
+    async function switchSection(sec) {
+      if (sec === 'dm' && !isDm) {
+        openDmLoginModal();
+        return;
+      }
+
+      currentSection = sec;
+      document.getElementById('tab-player').classList.toggle('active', sec === 'player');
+      document.getElementById('tab-dm').classList.toggle('active', sec === 'dm');
+      document.getElementById('sectionHeaderLabel').textContent = sec === 'dm' ? 'DM Notes Wiki (Private)' : 'Player Info Wiki';
+
+      stopTTS();
+      await loadDocList();
+    }
+
+    async function loadDocList() {
+      try {
+        const res = await fetch(`/getNotesList?section=${currentSection}`);
+        if (!res.ok && currentSection === 'dm') {
+          isDm = false;
+          updateDmUiState();
+          switchSection('player');
+          return;
+        }
+        const data = await res.json();
+        folderData = { folders: data.folders || [], rootFiles: data.rootFiles || [] };
+        isDm = !!data.isDm;
+
+        updateDmUiState();
+
+        const allDocs = [...folderData.rootFiles];
+        folderData.folders.forEach(f => f.files.forEach(fn => allDocs.push(`${f.name}/${fn}`)));
+
+        if (allDocs.length === 0) {
+          activeDocName = currentSection === 'dm' ? 'Welcome_DM_Notes' : 'Campaign_Overview';
+        } else if (!allDocs.includes(activeDocName)) {
+          activeDocName = allDocs[0];
+        }
+
+        renderDocList();
+        loadDoc(activeDocName);
+      } catch (err) {
+        console.error('Failed to load notes list:', err);
+      }
+    }
+
+    function updateDmUiState() {
+      const dmTab = document.getElementById('tab-dm');
+      const loginBtn = document.getElementById('dmLoginBtn');
+      const saveBtn = document.getElementById('saveBtn');
+      const viewModeBtn = document.getElementById('viewModeBtn');
+      const sidebarActions = document.getElementById('sidebarActions');
+
+      if (isDm) {
+        dmTab.classList.remove('locked');
+        loginBtn.innerHTML = '<i class="fa-solid fa-user-shield"></i> DM Unlocked';
+        loginBtn.style.color = '#00a2ff';
+        loginBtn.style.borderColor = '#00a2ff';
+        
+        saveBtn.style.display = 'flex';
+        viewModeBtn.style.display = 'flex';
+        sidebarActions.style.display = 'flex';
+        titleInput.removeAttribute('readonly');
+
+        if (isViewerMode) {
+          viewModeBtn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Editor Mode';
+        } else {
+          viewModeBtn.innerHTML = '<i class="fa-solid fa-eye"></i> Viewer Mode';
+        }
+      } else {
+        dmTab.classList.add('locked');
+        loginBtn.innerHTML = '<i class="fa-solid fa-lock"></i> DM Edit Mode';
+        loginBtn.style.color = '';
+        loginBtn.style.borderColor = '';
+
+        saveBtn.style.display = 'none';
+        viewModeBtn.style.display = 'none';
+        sidebarActions.style.display = 'none';
+        titleInput.setAttribute('readonly', 'readonly');
+        
+        isViewerMode = true;
+        document.querySelector('.workspace').classList.add('viewer-mode');
+        statusEl.textContent = 'Viewer Mode';
+      }
+    }
+
+    function renderDocList() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const listEl = document.getElementById('docList');
+      let html = '';
+
+      // Render Folders
+      folderData.folders.forEach(folder => {
+        const matchingFiles = folder.files.filter(f => f.toLowerCase().includes(query) || folder.name.toLowerCase().includes(query));
+        if (matchingFiles.length > 0 || !query) {
+          html += `
+            <div class="folder-group">
+              <div class="folder-header">
+                <span><i class="fa-solid fa-folder" style="margin-right:6px;"></i>${folder.name}</span>
+                ${isDm ? `<i class="fa-solid fa-trash del-folder-btn" title="Delete Folder" onclick="event.stopPropagation(); deleteWikiFolder('${folder.name}')"></i>` : ''}
+              </div>
+              <div class="folder-contents">
+                ${matchingFiles.map(fn => {
+                  const docPath = `${folder.name}/${fn}`;
+                  return `
+                    <div class="doc-item ${docPath === activeDocName ? 'active' : ''}" onclick="loadDoc('${docPath}')">
+                      <span><i class="fa-regular fa-file-lines" style="margin-right:6px;"></i>${fn}</span>
+                      ${isDm ? `<i class="fa-solid fa-trash del-btn" title="Delete Article" onclick="event.stopPropagation(); deleteDoc('${docPath}')"></i>` : ''}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      // Render Root Files
+      const matchingRoot = folderData.rootFiles.filter(f => f.toLowerCase().includes(query));
+      matchingRoot.forEach(fn => {
+        html += `
+          <div class="doc-item ${fn === activeDocName ? 'active' : ''}" onclick="loadDoc('${fn}')">
+            <span><i class="fa-regular fa-file-lines" style="margin-right:6px;"></i>${fn}</span>
+            ${isDm ? `<i class="fa-solid fa-trash del-btn" title="Delete Article" onclick="event.stopPropagation(); deleteDoc('${fn}')"></i>` : ''}
+          </div>
+        `;
+      });
+
+      listEl.innerHTML = html || '<div style="font-size:0.8rem;color:var(--text-muted);padding:10px;text-align:center;">No articles found</div>';
+    }
+
+    function filterDocList() {
+      renderDocList();
+    }
+
+    async function createNewFolder() {
+      if (!isDm) return;
+      const name = prompt('New Folder Name:');
+      if (!name || !name.trim()) return;
+      const cleanName = name.trim().replace(/[^a-zA-Z0-9_\-]/g, '_');
+
+      try {
+        await fetch('/createWikiFolder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ section: currentSection, name: cleanName })
+        });
+        await loadDocList();
+      } catch (err) {
+        alert('Failed to create folder.');
+      }
+    }
+
+    async function deleteWikiFolder(name) {
+      if (!isDm) return;
+      if (!confirm(`Delete folder "${name}" and all articles inside it?`)) return;
+      try {
+        await fetch('/deleteWikiFolder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ section: currentSection, name })
+        });
+        await loadDocList();
+      } catch (err) {
+        alert('Failed to delete folder.');
+      }
+    }
+
+    async function loadDoc(name) {
+      stopTTS();
+      activeDocName = name;
+      titleInput.value = name;
+      renderDocList();
+
+      try {
+        const res = await fetch(`/loadNote?section=${currentSection}&name=${encodeURIComponent(name)}`);
+        const text = await res.text();
+        textarea.value = text;
+        renderMarkdownPreview();
+      } catch (err) {
+        console.error('Error loading note:', err);
+      }
+    }
+
+    async function renderMarkdownPreview() {
+      if (isDm && !isViewerMode) {
+        statusEl.textContent = 'Editing...';
+        clearTimeout(saveDebounce);
+        saveDebounce = setTimeout(() => saveActiveDoc(), 1000);
+      }
+
+      const text = textarea.value;
+      try {
+        const res = await fetch('/renderMarkdown', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+        const html = await res.text();
+        preview.innerHTML = html;
+      } catch (err) {
+        console.error('Markdown preview error:', err);
+      }
+    }
+
+    textarea.addEventListener('input', renderMarkdownPreview);
+
+    async function saveActiveDoc() {
+      if (!isDm) return;
+      statusEl.textContent = 'Saving...';
+      try {
+        await fetch('/saveNote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ section: currentSection, name: activeDocName, text: textarea.value })
+        });
+        statusEl.textContent = 'Saved';
+      } catch (err) {
+        statusEl.textContent = 'Save failed';
+      }
+    }
+
+    async function createNewDoc() {
+      if (!isDm) return;
+      
+      let folderPrefix = '';
+      if (folderData.folders.length > 0) {
+        const choices = ['Root (No Folder)', ...folderData.folders.map(f => f.name)];
+        const pick = prompt(`Select folder for new article:\n${choices.map((c, i) => `${i}: ${c}`).join('\n')}`, '0');
+        if (pick === null) return;
+        const idx = parseInt(pick);
+        if (idx > 0 && idx < choices.length) {
+          folderPrefix = choices[idx] + '/';
+        }
+      }
+
+      const name = prompt('New Article Name:');
+      if (!name || !name.trim()) return;
+      const cleanName = folderPrefix + name.trim().replace(/[^a-zA-Z0-9_\-]/g, '_');
+      
+      activeDocName = cleanName;
+      textarea.value = `# ${name.trim().replace(/_/g, ' ')}\n\nStart writing notes... Use [[Wiki Links]] to link articles!`;
+      await saveActiveDoc();
+      await loadDocList();
+    }
+
+    async function deleteDoc(name) {
+      if (!isDm) return;
+      if (!confirm(`Delete article "${name}" from ${currentSection.toUpperCase()} wiki?`)) return;
+      try {
+        await fetch('/deleteNote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ section: currentSection, name })
+        });
+        await loadDocList();
+      } catch (err) {
+        alert('Failed to delete note.');
+      }
+    }
+
+    function insertMarkdown(prefix, suffix) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selected = textarea.value.substring(start, end);
+      const replacement = prefix + selected + suffix;
+      textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+      textarea.focus();
+      textarea.setSelectionRange(start + prefix.length, end + prefix.length);
+      renderMarkdownPreview();
+    }
+
+    function downloadDoc() {
+      const blob = new Blob([textarea.value], { type: 'text/markdown' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${activeDocName.replace('/', '_')}.md`;
+      a.click();
+    }
+
+    function toggleViewMode() {
+      if (!isDm) return;
+      isViewerMode = !isViewerMode;
+      const workspace = document.querySelector('.workspace');
+      const btn = document.getElementById('viewModeBtn');
+      if (isViewerMode) {
+        workspace.classList.add('viewer-mode');
+        btn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Editor Mode';
+        statusEl.textContent = 'Viewer Mode';
+      } else {
+        workspace.classList.remove('viewer-mode');
+        btn.innerHTML = '<i class="fa-solid fa-eye"></i> Viewer Mode';
+        statusEl.textContent = 'Editor Mode';
+      }
+    }
+
+    function openDmLoginModal() {
+      if (isDm) return;
+      document.getElementById('dmModal').style.display = 'flex';
+      document.getElementById('dmPassInput').focus();
+    }
+
+    function closeDmLoginModal() {
+      document.getElementById('dmModal').style.display = 'none';
+      document.getElementById('dmPassInput').value = '';
+    }
+
+    async function submitDmLogin() {
+      const pass = document.getElementById('dmPassInput').value;
+      if (!pass) return;
+
+      try {
+        const res = await fetch('/api/dm-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pass })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          isDm = true;
+          closeDmLoginModal();
+          updateDmUiState();
+          isViewerMode = false;
+          document.querySelector('.workspace').classList.remove('viewer-mode');
+          statusEl.textContent = 'Editor Mode';
+          await loadDocList();
+        } else {
+          alert('Incorrect DM password.');
+        }
+      } catch (err) {
+        alert('Authentication failed.');
+      }
+    }
+
+    // Auto load Player section on init in Viewer Mode
+    switchSection('player');
+  </script>
+</body>
+</html>

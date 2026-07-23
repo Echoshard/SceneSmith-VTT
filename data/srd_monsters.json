@@ -1,0 +1,160 @@
+[
+  {
+    "name": "Goblin",
+    "type": "Small Humanoid (Goblinoid)",
+    "hp": 7,
+    "ac": 15,
+    "init": "+2",
+    "perception": "+0",
+    "stats": "STR -1 | DEX +2 | CON +0 | INT -1 | WIS +0 | CHA -1",
+    "saves": "DEX +4",
+    "skills": "Stealth +6",
+    "actions": [
+      { "name": "Scimitar", "detail": "Melee Weapon Attack +4 to hit, reach 5 ft., 1d6 + 2 slashing damage." },
+      { "name": "Shortbow", "detail": "Ranged Weapon Attack +4 to hit, range 80/320 ft., 1d6 + 2 piercing damage." }
+    ],
+    "traits": [
+      { "name": "Nimble Escape", "detail": "The goblin can take the Disengage or Hide action as a bonus action on each of its turns." }
+    ]
+  },
+  {
+    "name": "Skeleton",
+    "type": "Medium Undead",
+    "hp": 13,
+    "ac": 13,
+    "init": "+2",
+    "perception": "-1",
+    "stats": "STR +0 | DEX +2 | CON +2 | INT -2 | WIS -1 | CHA -3",
+    "saves": "None",
+    "skills": "Vulnerable to Bludgeoning",
+    "actions": [
+      { "name": "Shortsword", "detail": "Melee Weapon Attack +4 to hit, reach 5 ft., 1d6 + 2 piercing damage." },
+      { "name": "Shortbow", "detail": "Ranged Weapon Attack +4 to hit, range 80/320 ft., 1d6 + 2 piercing damage." }
+    ],
+    "traits": [
+      { "name": "Damage Vulnerabilities", "detail": "Vulnerable to bludgeoning damage." },
+      { "name": "Condition Immunities", "detail": "Exhaustion, Poisoned. Immune to Poison damage." }
+    ]
+  },
+  {
+    "name": "Zombie",
+    "type": "Medium Undead",
+    "hp": 22,
+    "ac": 8,
+    "init": "-2",
+    "perception": "-1",
+    "stats": "STR +1 | DEX -2 | CON +3 | INT -3 | WIS -1 | CHA -3",
+    "saves": "WIS +0",
+    "skills": "Darkvision 60ft",
+    "actions": [
+      { "name": "Slam", "detail": "Melee Weapon Attack +3 to hit, reach 5 ft., 1d6 + 1 bludgeoning damage." }
+    ],
+    "traits": [
+      { "name": "Undead Fortitude", "detail": "If damage reduces the zombie to 0 HP, it must make a CON save (DC 5 + damage taken), unless the damage is radiant or a critical hit. On success, it drops to 1 HP instead." }
+    ]
+  },
+  {
+    "name": "Bandit",
+    "type": "Medium Humanoid",
+    "hp": 11,
+    "ac": 12,
+    "init": "+1",
+    "perception": "+0",
+    "stats": "STR +0 | DEX +1 | CON +1 | INT +0 | WIS +0 | CHA +0",
+    "saves": "None",
+    "skills": "Athletics +2",
+    "actions": [
+      { "name": "Scimitar", "detail": "Melee Weapon Attack +3 to hit, reach 5 ft., 1d6 + 1 slashing damage." },
+      { "name": "Light Crossbow", "detail": "Ranged Weapon Attack +3 to hit, range 80/320 ft., 1d8 + 1 piercing damage." }
+    ],
+    "traits": []
+  },
+  {
+    "name": "Cultist",
+    "type": "Medium Humanoid",
+    "hp": 9,
+    "ac": 12,
+    "init": "+1",
+    "perception": "+0",
+    "stats": "STR +0 | DEX +1 | CON +0 | INT +0 | WIS +0 | CHA +0",
+    "saves": "None",
+    "skills": "Deception +2, Religion +2",
+    "actions": [
+      { "name": "Scimitar", "detail": "Melee Weapon Attack +3 to hit, reach 5 ft., 1d6 + 1 slashing damage." }
+    ],
+    "traits": [
+      { "name": "Dark Devotion", "detail": "The cultist has advantage on saving throws against being charmed or frightened." }
+    ]
+  },
+  {
+    "name": "Orc",
+    "type": "Medium Humanoid (Orc)",
+    "hp": 15,
+    "ac": 13,
+    "init": "+1",
+    "perception": "-1",
+    "stats": "STR +3 | DEX +1 | CON +3 | INT -2 | WIS -1 | CHA +0",
+    "saves": "None",
+    "skills": "Intimidation +2",
+    "actions": [
+      { "name": "Greataxe", "detail": "Melee Weapon Attack +5 to hit, reach 5 ft., 1d12 + 3 slashing damage." },
+      { "name": "Javelin", "detail": "Ranged Weapon Attack +5 to hit, range 30/120 ft., 1d6 + 3 piercing damage." }
+    ],
+    "traits": [
+      { "name": "Aggressive", "detail": "As a bonus action, the orc can move up to its speed toward a hostile creature that it can see." }
+    ]
+  },
+  {
+    "name": "Ogre",
+    "type": "Large Giant",
+    "hp": 59,
+    "ac": 11,
+    "init": "-1",
+    "perception": "-1",
+    "stats": "STR +4 | DEX -1 | CON +3 | INT -3 | WIS -1 | CHA -2",
+    "saves": "None",
+    "skills": "Heavy Hitter",
+    "actions": [
+      { "name": "Greatclub", "detail": "Melee Weapon Attack +6 to hit, reach 5 ft., 2d8 + 4 bludgeoning damage." },
+      { "name": "Javelin", "detail": "Ranged Weapon Attack +6 to hit, range 30/120 ft., 2d6 + 4 piercing damage." }
+    ],
+    "traits": []
+  },
+  {
+    "name": "Mage (SRD)",
+    "type": "Medium Humanoid (9th-Level Spellcaster)",
+    "hp": 40,
+    "ac": 12,
+    "init": "+2",
+    "perception": "+1",
+    "stats": "STR -1 | DEX +2 | CON +0 | INT +3 | WIS +1 | CHA +0",
+    "saves": "INT +6 | WIS +4",
+    "skills": "Arcana +6, History +6",
+    "actions": [
+      { "name": "Dagger", "detail": "Melee or Ranged Weapon Attack +5 to hit, 1d4 + 2 piercing damage." },
+      { "name": "Fireball (3rd Level)", "detail": "8d6 fire damage in a 20ft sphere (DC 14 DEX save)." }
+    ],
+    "traits": [
+      { "name": "Spellcasting", "detail": "Spell save DC 14, +6 to hit with spell attacks. Cantrips: Fire Bolt, Mage Hand, Prestidigitation. 1st: Shield, Magic Missile. 2nd: Misty Step. 3rd: Counterspell, Fireball. 4th: Greater Invisibility, Ice Storm. 5th: Cone of Cold." }
+    ]
+  },
+  {
+    "name": "Young Red Dragon",
+    "type": "Large Dragon",
+    "hp": 178,
+    "ac": 18,
+    "init": "+0",
+    "perception": "+8",
+    "stats": "STR +6 | DEX +0 | CON +5 | INT +2 | WIS +0 | CHA +4",
+    "saves": "DEX +4 | CON +9 | WIS +4 | CHA +8",
+    "skills": "Perception +8, Stealth +4",
+    "actions": [
+      { "name": "Multiattack", "detail": "The dragon makes three attacks: one with its bite and two with its claws." },
+      { "name": "Bite", "detail": "Melee Weapon Attack +10 to hit, 2d10 + 6 piercing + 1d6 fire damage." },
+      { "name": "Fire Breath (Recharge 5-6)", "detail": "The dragon exhales fire in a 30-foot cone. DC 17 Dex save, 16d6 fire damage on a failed save, or half as much on a successful one." }
+    ],
+    "traits": [
+      { "name": "Immunity", "detail": "Immune to Fire damage." }
+    ]
+  }
+]

@@ -119,22 +119,17 @@ echo ==========================================
 echo.
 echo   -- Localhost --
 echo   Player       : http://localhost:%PORT%/
-echo   Player Files : http://localhost:%PORT%/player-files
-echo   DM           : http://localhost:%PORT%/dm
-echo   Files        : http://localhost:%PORT%/dmadmin
 echo.
 echo   -- Network (share with players) --
 echo   Player       : http://%LOCAL_IP%:%PORT%/
-echo   Player Files : http://%LOCAL_IP%:%PORT%/player-files
-echo   DM           : http://%LOCAL_IP%:%PORT%/dm
-echo   Files        : http://%LOCAL_IP%:%PORT%/dmadmin
+
 echo.
 echo   Close this window to stop the server.
 echo ==========================================
 echo.
 
 REM Open DM page in browser after a short delay to let the server start
-start /b cmd /c "timeout /t 2 >nul && start http://localhost:%PORT%/dm"
+start /b cmd /c "timeout /t 2 >nul && start http://localhost:%PORT%/"
 
 pushd "%APP_WORKDIR%" >nul
 "%ACTIVE_PY_EXE%" "%APP_PATH%"

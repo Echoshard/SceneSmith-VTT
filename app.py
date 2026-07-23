@@ -258,19 +258,29 @@ def require_player():
 
 
 def json_body():
-    return request.get_json(silent=True) or request.form.to_dict() or {}
+    return request.get_json(force=True, silent=True) or request.form.to_dict() or request.args.to_dict() or {}
 
 
 @app.before_request
 def redirect_static_html_names():
     if request.path == "/index.html":
         return redirect("/")
+    if request.path == "/player.html":
+        return redirect("/player")
     if request.path == "/dm.html":
         return redirect("/dm")
     if request.path == "/files.html":
         return redirect("/dmadmin")
     if request.path == "/player-files.html":
         return redirect("/player-files")
+    if request.path == "/dice.html":
+        return redirect("/dice")
+    if request.path == "/token-stamp.html":
+        return redirect("/token-stamp")
+    if request.path == "/notes.html":
+        return redirect("/notes")
+    if request.path == "/bestiary.html":
+        return redirect("/bestiary")
     return None
 
 
@@ -282,10 +292,23 @@ def cache_headers(response):
 
 
 @app.get("/")
-def player_index():
+def portal_index():
+    return send_from_directory(PUBLIC_DIR, "index.html")
+
+
+@app.get("/authStatus")
+def auth_status():
+    return jsonify({
+        "isDm": bool(session.get("isDM")),
+        "isPlayer": bool(session.get("isPlayer") or session.get("isDM"))
+    })
+
+
+@app.get("/player")
+def player_vtt_page():
     if not require_player():
         return redirect("/player-login")
-    return send_from_directory(PUBLIC_DIR, "index.html")
+    return send_from_directory(PUBLIC_DIR, "player.html")
 
 
 @app.get("/player-login")
@@ -298,7 +321,7 @@ def player_login():
     password = request.form.get("password") or json_body().get("password")
     if password == app.config["PLAYER_PASSWORD"]:
         session["isPlayer"] = True
-        return redirect("/")
+        return redirect("/player")
     return 'Incorrect password. <a href="/player-login">Try again</a>'
 
 
@@ -335,6 +358,513 @@ def player_files_page():
     if not require_player():
         return redirect("/player-login")
     return send_from_directory(PUBLIC_DIR, "player-files.html")
+
+
+@app.get("/dice")
+def dice_page():
+    return send_from_directory(PUBLIC_DIR, "dice.html")
+
+
+@app.get("/token-stamp")
+def token_stamp_page():
+    return send_from_directory(PUBLIC_DIR, "token-stamp.html")
+
+
+@app.get("/notes")
+def notes_page():
+    return send_from_directory(PUBLIC_DIR, "notes.html")
+
+
+@app.get("/player-notes")
+def player_notes_page():
+    return send_from_directory(PUBLIC_DIR, "notes.html")
+
+
+@app.get("/bestiary")
+def bestiary_page():
+    return send_from_directory(PUBLIC_DIR, "bestiary.html")
+
+
+@app.get("/api/bestiary")
+def get_bestiary_list():
+    bestiary_dir = DATA_DIR / "bestiary"
+    bestiary_dir.mkdir(parents=True, exist_ok=True)
+
+    presets = [
+        {
+            "name": "Cannon Fodder",
+            "type": "Small / Medium Minion",
+            "hp": 9,
+            "ac": 11,
+            "init": "+0",
+            "perception": "+0",
+            "stats": "STR +0 | DEX +0 | CON +0 | INT +0 | WIS +0 | CHA +0",
+            "saves": "None",
+            "actions": [
+                {"name": "Light Pistol", "detail": "Attack +2, 1d6 piercing damage"}
+            ],
+            "traits": [
+                {"name": "Utility Drone (1/Day)", "detail": "Grants Help advantage on one ability check or attack roll."}
+            ],
+            "skills": "+4 Persuade"
+        },
+        {
+            "name": "Hover Drone",
+            "type": "Small Flying Automaton (60ft)",
+            "hp": 20,
+            "ac": 15,
+            "init": "+2",
+            "perception": "+0",
+            "stats": "STR +0 | DEX +2 | CON +2 | INT +2 | WIS +0 | CHA +0",
+            "saves": "DEX +3 | CON +4",
+            "actions": [
+                {"name": "Laser Blaster", "detail": "Ranged Attack +2 (Laser blaster) 1d6 radiant damage"}
+            ],
+            "traits": [
+                {"name": "Hover Recon", "detail": "Can fly up to 60ft and hover in place without provoking opportunity attacks."}
+            ],
+            "skills": "Perception +0"
+        },
+        {
+            "name": "Mercenary",
+            "type": "Medium Humanoid",
+            "hp": 45,
+            "ac": 14,
+            "init": "+1",
+            "perception": "+4",
+            "stats": "STR +2 | DEX +1 | CON +2 | INT +0 | WIS +0 | CHA +0",
+            "saves": "DEX +3 | CON +4",
+            "actions": [
+                {"name": "Combat Sword", "detail": "Melee Attack +4 (Combat Sword) 1d10 + 2 slashing + 1d6 radiant damage"},
+                {"name": "Shotgun", "detail": "Range Attack +4 (Shotgun) 2d6 + 2 piercing damage"}
+            ],
+            "traits": [
+                {"name": "Grenade (1/Day)", "detail": "Throws a frag grenade. DC 11 Dex save, 2d8 fire damage to all targets in 15ft radius."},
+                {"name": "Fire Resistance", "detail": "Takes half damage from fire attacks."}
+            ],
+            "skills": "Perception +4, Survival +3"
+        }
+    ]
+
+    srd_monsters = []
+    srd_file = DATA_DIR / "srd_monsters.json"
+    if srd_file.exists():
+        try:
+            srd_monsters = json.loads(srd_file.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+
+    custom_blocks = []
+    for file in bestiary_dir.glob("*.json"):
+        try:
+            custom_blocks.append(json.loads(file.read_text(encoding="utf-8")))
+        except Exception:
+            pass
+
+    return jsonify({"ok": True, "presets": presets, "srd": srd_monsters, "custom": custom_blocks})
+
+
+@app.post("/api/generateFodder")
+def generate_fodder():
+    data = request.get_json(force=True, silent=True) or json_body()
+    raw_arch = data.get("archetype") or request.args.get("archetype") or request.form.get("archetype") or "grunt"
+    archetype_key = str(raw_arch).strip().lower()
+
+    raw_level = data.get("level") or request.args.get("level") or request.form.get("level") or 1
+    try:
+        level = max(1, min(20, int(raw_level)))
+    except (ValueError, TypeError):
+        level = 1
+
+    raw_name = data.get("name") or request.args.get("name") or request.form.get("name") or ""
+    custom_name = str(raw_name).strip()
+
+    # Load external JSON configuration
+    config_file = DATA_DIR / "fodder_archetypes.json"
+    archetypes_cfg = {}
+    if config_file.exists():
+        try:
+            archetypes_cfg = json.loads(config_file.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+
+    ARCHETYPE_ALIASES = {
+        "priest": "priest",
+        "cleric": "priest",
+        "druid": "druid",
+        "bard": "bard",
+        "mage": "mage",
+        "wizard": "mage",
+        "thief": "thief",
+        "rogue": "thief",
+        "grunt": "grunt",
+        "warrior": "grunt",
+        "fighter": "grunt"
+    }
+    target_key = ARCHETYPE_ALIASES.get(archetype_key, archetype_key)
+    cfg = archetypes_cfg.get(target_key) or archetypes_cfg.get("grunt") or {}
+
+    if not custom_name:
+        custom_name = f"Level {level} {cfg.get('title', target_key.capitalize())}"
+
+    pb = (level - 1) // 4 + 2
+    primary_mod = cfg.get("baseStatVal", 3) + (level // cfg.get("statScaleDivisor", 4))
+    hp = cfg.get("baseHp", 10) + (level - 1) * cfg.get("hpPerLevel", 6)
+    ac = cfg.get("baseAc", 14) + (level // cfg.get("acScaleDivisor", 4))
+
+    heal_dice = 1 + (level // 4)
+    sneak_dice = (level + 1) // 2
+    ray_dice = 1 + (level // 5)
+    cantrip_dice = 1 if level < 5 else (2 if level < 11 else (3 if level < 17 else 4))
+    attack_mod = primary_mod + pb
+    ranged_mod = 1 + pb
+
+    fmt_vars = {
+        "level": level,
+        "pb": pb,
+        "primary_mod": primary_mod,
+        "attack_mod": attack_mod,
+        "ranged_mod": ranged_mod,
+        "heal_dice": heal_dice,
+        "sneak_dice": sneak_dice,
+        "ray_dice": ray_dice,
+        "cantrip_dice": cantrip_dice,
+        "cantrip_d10": f"{cantrip_dice}d10",
+        "cantrip_d8": f"{cantrip_dice}d8",
+        "cantrip_d6": f"{cantrip_dice}d6",
+        "cantrip_d4": f"{cantrip_dice}d4",
+        "cantrip_d12": f"{cantrip_dice}d12",
+        "dc": 8 + pb + primary_mod,
+        "level_temp_hp": 15 + level * 3,
+        "int_save": primary_mod + pb if cfg.get("primaryStat") == "INT" else 1 + pb,
+        "wis_save": primary_mod + pb if cfg.get("primaryStat") == "WIS" else 1 + pb,
+        "str_save": primary_mod + pb if cfg.get("primaryStat") == "STR" else 1 + pb,
+        "dex_save": primary_mod + pb if cfg.get("primaryStat") == "DEX" else 3 + pb,
+        "cha_save": primary_mod + pb if cfg.get("primaryStat") == "CHA" else 1 + pb,
+        "con_save": 3 + pb,
+        "rel_skill": 1 + pb,
+        "med_skill": primary_mod + pb,
+        "per_skill": primary_mod + pb,
+        "arc_skill": primary_mod + pb,
+        "hist_skill": primary_mod,
+        "ath_skill": primary_mod + pb,
+        "stealth_skill": primary_mod + pb + 2,
+        "acro_skill": primary_mod + pb
+    }
+
+    spells_dict = cfg.get("spells") or {}
+    spells_active = []
+    if "cantrips" in spells_dict: spells_active.append(spells_dict["cantrips"].format(**fmt_vars))
+    if level >= 1 and "level1" in spells_dict: spells_active.append(spells_dict["level1"].format(**fmt_vars))
+    if level >= 3 and "level3" in spells_dict: spells_active.append(spells_dict["level3"].format(**fmt_vars))
+    if level >= 5 and "level5" in spells_dict: spells_active.append(spells_dict["level5"].format(**fmt_vars))
+    if level >= 7 and "level7" in spells_dict: spells_active.append(spells_dict["level7"].format(**fmt_vars))
+    if level >= 9 and "level9" in spells_dict: spells_active.append(spells_dict["level9"].format(**fmt_vars))
+    fmt_vars["spells"] = " | ".join(spells_active)
+
+    stats = cfg.get("statsTemplate", "").format(**fmt_vars)
+    saves = cfg.get("savesTemplate", "").format(**fmt_vars)
+    skills = cfg.get("skillsTemplate", "").format(**fmt_vars)
+
+    actions = [{"name": a["name"].format(**fmt_vars), "detail": a["detail"].format(**fmt_vars)} for a in cfg.get("actions", [])]
+    traits = [{"name": t["name"].format(**fmt_vars), "detail": t["detail"].format(**fmt_vars)} for t in cfg.get("traits", [])]
+
+    init_val = f"+{fmt_vars['primary_mod']}" if cfg.get("primaryStat") == "DEX" else "+0" if cfg.get("primaryStat") == "WIS" else f"+{2 + (level // 6)}" if cfg.get("primaryStat") == "INT" else "+1"
+    percep_val = f"+{fmt_vars['primary_mod'] + pb}" if cfg.get("primaryStat") == "WIS" else f"+{2 + pb}" if cfg.get("primaryStat") == "DEX" else f"+{1 + (level // 3)}" if cfg.get("primaryStat") == "INT" else "+1"
+
+    block = {
+        "name": custom_name,
+        "type": f"Level {level} {cfg.get('title', archetype_key.capitalize())}",
+        "hp": hp,
+        "ac": ac,
+        "init": init_val,
+        "perception": percep_val,
+        "stats": stats,
+        "saves": saves,
+        "actions": actions,
+        "traits": traits,
+        "skills": skills
+    }
+
+    return jsonify({"ok": True, "statBlock": block})
+
+
+@app.post("/api/saveStatBlock")
+def save_stat_block():
+    if not require_dm():
+        return jsonify({"error": "DM login required"}), 401
+    data = json_body()
+    name = re.sub(r"[^a-zA-Z0-9_\-]", "", data.get("name") or "")
+    if not name:
+        return jsonify({"error": "Invalid stat block name"}), 400
+    bestiary_dir = DATA_DIR / "bestiary"
+    bestiary_dir.mkdir(parents=True, exist_ok=True)
+    (bestiary_dir / f"{name}.json").write_text(json.dumps(data, indent=2), encoding="utf-8")
+    return jsonify({"ok": True})
+
+
+@app.post("/saveTokenStamp")
+def save_token_stamp():
+    data = json_body()
+    base64_data = data.get("image") or ""
+    if not base64_data or not re.match(r"^data:image/(png|jpeg|webp);base64,", base64_data):
+        return jsonify({"error": "Invalid image data"}), 400
+    import base64
+    raw_bytes = base64.b64decode(re.sub(r"^data:image/(png|jpeg|webp);base64,", "", base64_data))
+    tokens_dir = MEDIA_DIR / "Tokens"
+    tokens_dir.mkdir(parents=True, exist_ok=True)
+    filename = f"stamped_token_{now_ms()}_{random.randint(100, 999)}.png"
+    target = tokens_dir / filename
+    target.write_bytes(raw_bytes)
+    return jsonify({"ok": True, "url": f"/media/Tokens/{filename}"})
+
+
+@app.post("/api/dm-login")
+def api_dm_login():
+    password = json_body().get("password") or request.form.get("password")
+    if password == app.config["DM_PASSWORD"]:
+        session["isDM"] = True
+        return jsonify({"ok": True, "isDm": True})
+    return jsonify({"error": "Incorrect DM password"}), 401
+
+
+@app.post("/uploadWikiImage")
+def upload_wiki_image():
+    if not require_dm():
+        return jsonify({"error": "DM login required"}), 401
+    file = request.files.get("file") or request.files.get("image")
+    if not file:
+        return jsonify({"error": "No file uploaded"}), 400
+    ext = Path(file.filename).suffix.lower()
+    if ext not in IMAGE_EXTS:
+        return jsonify({"error": "Unsupported image format"}), 400
+    wiki_dir = MEDIA_DIR / "wiki"
+    wiki_dir.mkdir(parents=True, exist_ok=True)
+    filename = f"wiki_{now_ms()}_{secure_filename(file.filename)}"
+    file.save(wiki_dir / filename)
+    return jsonify({"ok": True, "url": f"/media/wiki/{filename}"})
+
+
+def clean_wiki_path(path):
+    clean = re.sub(r"[^a-zA-Z0-9_\-/]", "", path or "").strip("/")
+    return re.sub(r"/+", "/", clean)
+
+
+@app.get("/getNotesList")
+def get_notes_list():
+    section = request.args.get("section") or "player"
+    is_dm_user = require_dm()
+    if section == "dm" and not is_dm_user:
+        return jsonify({"error": "DM login required", "isDm": False}), 401
+    notes_dir = DATA_DIR / "notes" / section
+    notes_dir.mkdir(parents=True, exist_ok=True)
+
+    folders = []
+    root_files = []
+
+    for entry in notes_dir.iterdir():
+        if entry.name.startswith("."):
+            continue
+        if entry.is_dir():
+            files = [sub.stem for sub in entry.glob("*.md") if sub.is_file()]
+            folders.append({"name": entry.name, "files": sorted(files)})
+        elif entry.is_file() and entry.suffix == ".md":
+            root_files.append(entry.stem)
+
+    if not folders and not root_files:
+        default_name = "Campaign_Overview" if section == "player" else "Welcome_DM_Notes"
+        default_file = notes_dir / f"{default_name}.md"
+        if not default_file.exists():
+            content = f"# {default_name.replace('_', ' ')}\n\nWelcome to the {section.upper()} wiki!"
+            default_file.write_text(content, encoding="utf-8")
+        root_files = [default_name]
+
+    return jsonify({
+        "ok": True,
+        "folders": sorted(folders, key=lambda f: f["name"]),
+        "rootFiles": sorted(root_files),
+        "section": section,
+        "isDm": is_dm_user
+    })
+
+
+@app.post("/createWikiFolder")
+def create_wiki_folder():
+    if not require_dm():
+        return jsonify({"error": "DM login required"}), 401
+    data = json_body()
+    section = data.get("section") or "player"
+    name = safe_folder_name(data.get("name"))
+    if not name:
+        return jsonify({"error": "Invalid folder name"}), 400
+    target = DATA_DIR / "notes" / section / name
+    target.mkdir(parents=True, exist_ok=True)
+    return jsonify({"ok": True})
+
+
+@app.post("/deleteWikiFolder")
+def delete_wiki_folder():
+    if not require_dm():
+        return jsonify({"error": "DM login required"}), 401
+    data = json_body()
+    section = data.get("section") or "player"
+    name = safe_folder_name(data.get("name"))
+    if not name:
+        return jsonify({"error": "Invalid folder name"}), 400
+    target = DATA_DIR / "notes" / section / name
+    shutil.rmtree(target, ignore_errors=True)
+    return jsonify({"ok": True})
+
+
+@app.get("/loadNote")
+def load_note():
+    section = request.args.get("section") or "player"
+    if section == "dm" and not require_dm():
+        return "Unauthorized. DM login required.", 401
+    raw_path = clean_wiki_path(request.args.get("name") or "")
+    if not raw_path:
+        raw_path = "Campaign_Overview" if section == "player" else "Welcome_DM_Notes"
+    file = DATA_DIR / "notes" / section / f"{raw_path}.md"
+    if not file.exists():
+        return f"# {Path(raw_path).name.replace('_', ' ')}\n\nNew article text..."
+    return file.read_text(encoding="utf-8")
+
+
+@app.post("/saveNote")
+def save_note():
+    if not require_dm():
+        return jsonify({"error": "DM login required to edit wiki notes"}), 401
+    data = json_body()
+    section = data.get("section") or "player"
+    raw_path = clean_wiki_path(data.get("name") or "")
+    if not raw_path:
+        return jsonify({"error": "Invalid note name"}), 400
+    text = data.get("text") or ""
+    file = DATA_DIR / "notes" / section / f"{raw_path}.md"
+    file.parent.mkdir(parents=True, exist_ok=True)
+    file.write_text(text, encoding="utf-8")
+    return jsonify({"ok": True})
+
+
+@app.post("/deleteNote")
+def delete_note():
+    if not require_dm():
+        return jsonify({"error": "DM login required to delete wiki notes"}), 401
+    data = json_body()
+    section = data.get("section") or "player"
+    raw_path = clean_wiki_path(data.get("name") or "")
+    if raw_path:
+        file = DATA_DIR / "notes" / section / f"{raw_path}.md"
+        file.unlink(missing_ok=True)
+    return jsonify({"ok": True})
+
+
+@app.post("/publishNote")
+def publish_note():
+    data = json_body()
+    name = re.sub(r"[^a-zA-Z0-9_\-]", "", data.get("name") or "")
+    if not name:
+        return jsonify({"error": "Invalid note name"}), 400
+    source = DATA_DIR / "notes" / "dm" / f"{name}.md"
+    dest_dir = DATA_DIR / "notes" / "player"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    if source.exists():
+        (dest_dir / f"{name}.md").write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+        return jsonify({"ok": True, "message": f"Published '{name}' to Player Info wiki!"})
+    return jsonify({"error": "Note not found"}), 404
+
+
+def simple_markdown_render(text):
+    import html as html_lib
+    lines = text.splitlines()
+    out = []
+    in_code = False
+    in_list = False
+    in_table = False
+
+    for line in lines:
+        if line.startswith("```"):
+            if in_code:
+                out.append("</code></pre>")
+                in_code = False
+            else:
+                out.append("<pre><code>")
+                in_code = True
+            continue
+
+        if in_code:
+            out.append(html_lib.escape(line))
+            continue
+
+        if line.startswith("# "):
+            out.append(f"<h1>{line[2:]}</h1>")
+            continue
+        elif line.startswith("## "):
+            out.append(f"<h2>{line[3:]}</h2>")
+            continue
+        elif line.startswith("### "):
+            out.append(f"<h3>{line[4:]}</h3>")
+            continue
+
+        if line.startswith("> "):
+            out.append(f"<blockquote>{line[2:]}</blockquote>")
+            continue
+
+        if line.startswith("- ") or line.startswith("* "):
+            if not in_list:
+                out.append("<ul>")
+                in_list = True
+            out.append(f"<li>{line[2:]}</li>")
+            continue
+        else:
+            if in_list:
+                out.append("</ul>")
+                in_list = False
+
+        if line.startswith("|") and line.endswith("|"):
+            cells = [c.strip() for c in line.strip("|").split("|")]
+            if all(c.replace("-", "").replace(":", "") == "" for c in cells):
+                continue
+            if not in_table:
+                out.append("<table><thead><tr>" + "".join(f"<th>{c}</th>" for c in cells) + "</tr></thead><tbody>")
+                in_table = True
+            else:
+                out.append("<tr>" + "".join(f"<td>{c}</td>" for c in cells) + "</tr>")
+            continue
+        else:
+            if in_table:
+                out.append("</tbody></table>")
+                in_table = False
+
+        if not line.strip():
+            continue
+
+        formatted = line
+        formatted = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", formatted)
+        formatted = re.sub(r"\*(.*?)\*", r"<em>\1</em>", formatted)
+        formatted = re.sub(r"`(.*?)`", r"<code>\1</code>", formatted)
+        out.append(f"<p>{formatted}</p>")
+
+    if in_list:
+        out.append("</ul>")
+    if in_table:
+        out.append("</tbody></table>")
+    if in_code:
+        out.append("</code></pre>")
+
+    return "\n".join(out)
+
+
+@app.post("/renderMarkdown")
+def render_markdown():
+    data = json_body()
+    text = data.get("text") or ""
+    def repl_wiki(m):
+        link_text = m.group(1).strip()
+        return f'<a class="wiki-link" href="#" onclick="event.preventDefault(); loadDoc(\'{link_text}\')"><i class="fa-solid fa-link"></i> {link_text}</a>'
+    processed = re.sub(r"\[\[(.*?)\]\]", repl_wiki, text)
+    html = simple_markdown_render(processed)
+    return html, 200, {"Content-Type": "text/html; charset=utf-8"}
 
 
 @app.post("/createScene")

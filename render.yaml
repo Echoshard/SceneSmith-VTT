@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: scenesmith-vtt
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: VTT_PORT
+        value: 3000

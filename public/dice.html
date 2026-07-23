@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SceneSmith - 3D Dice Roller</title>
+  <link rel="icon" type="image/png" href="SceneSmith.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    :root {
+      --bg: #08080c;
+      --panel: rgba(18, 18, 26, 0.85);
+      --border: rgba(255, 255, 255, 0.12);
+      --accent: #00a2ff;
+      --accent-glow: rgba(0, 162, 255, 0.35);
+      --text: #f0f0f5;
+      --text-muted: #9999aa;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Full-screen 3D Dice Canvas Container */
+    #dice-box-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .top-nav {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      z-index: 10;
+    }
+
+    .back-btn {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--panel);
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      color: var(--text);
+      border-color: var(--accent);
+      background: rgba(0, 162, 255, 0.15);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      z-index: 10;
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .card {
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+    }
+
+    /* Dice Grid */
+    .dice-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .die-btn {
+      background: #1a1a26;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 12px 6px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .die-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+
+    .die-btn span.label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .die-btn:hover span.label {
+      color: #fff;
+    }
+
+    /* Controls & Form */
+    .control-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    select, input[type="text"] {
+      background: #181824;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    select {
+      width: 140px;
+      cursor: pointer;
+    }
+
+    input[type="text"] {
+      flex: 1;
+    }
+
+    input[type="text"]:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .roll-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .roll-btn:hover {
+      background: #0070f3;
+    }
+
+    .adv-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .adv-btn {
+      flex: 1;
+      padding: 8px;
+      background: #181824;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+
+    .adv-btn.active {
+      background: rgba(0, 162, 255, 0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Display Area */
+    .result-display {
+      background: #14141e;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      text-align: center;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .total-val {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .breakdown-val {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* History List */
+    .history-list {
+      max-height: 380px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .history-item {
+      background: #14141e;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    .history-formula {
+      font-weight: 600;
+    }
+
+    .history-breakdown {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .history-total {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+
+    .status-badge {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background: rgba(0, 162, 255, 0.15);
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 3D Physics Canvas Layer -->
+  <div id="dice-box-container"></div>
+
+  <div class="top-nav">
+    <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Home Portal</a>
+    <span class="status-badge" id="dice-status">3D Engine Initializing…</span>
+  </div>
+
+  <div class="container">
+    <!-- Roller Controls Card -->
+    <div class="card">
+      <h2><i class="fa-solid fa-dice-d20"></i> 3D Roller Controls</h2>
+
+      <div class="dice-grid">
+        <button class="die-btn" onclick="roll3D('1d4')"><i class="fa-solid fa-dice-d6"></i>d4 <span class="label">4-sided</span></button>
+        <button class="die-btn" onclick="roll3D('1d6')"><i class="fa-solid fa-dice-d6"></i>d6 <span class="label">6-sided</span></button>
+        <button class="die-btn" onclick="roll3D('1d8')"><i class="fa-solid fa-dice-d6"></i>d8 <span class="label">8-sided</span></button>
+        <button class="die-btn" onclick="roll3D('1d10')"><i class="fa-solid fa-dice-d6"></i>d10 <span class="label">10-sided</span></button>
+        <button class="die-btn" onclick="roll3D('1d12')"><i class="fa-solid fa-dice-d6"></i>d12 <span class="label">12-sided</span></button>
+        <button class="die-btn" onclick="roll3D('1d20')"><i class="fa-solid fa-dice-d20"></i>d20 <span class="label">20-sided</span></button>
+        <button class="die-btn" onclick="roll3D('1d100')"><i class="fa-solid fa-dice-d6"></i>d100 <span class="label">100-sided</span></button>
+        <button class="die-btn" onclick="roll3D('2d20')"><i class="fa-solid fa-dice"></i>2d20 <span class="label">Pair</span></button>
+      </div>
+
+      <div class="control-row">
+        <select id="dice-theme-select" onchange="changeDiceTheme(this.value)">
+          <option value="white">White Dice</option>
+          <option value="black">Black Dice</option>
+          <option value="red">Red Dice</option>
+          <option value="blue">Blue Dice</option>
+          <option value="green">Green Dice</option>
+          <option value="gold">Gold Dice</option>
+          <option value="purple">Purple Dice</option>
+        </select>
+        <button class="back-btn" style="flex:none;" onclick="clearCanvas()"><i class="fa-solid fa-eraser"></i> Clear 3D</button>
+      </div>
+
+      <div class="adv-row">
+        <button class="adv-btn active" id="adv-normal" onclick="setAdvantage('normal')">Normal</button>
+        <button class="adv-btn" id="adv-advantage" onclick="setAdvantage('adv')">Advantage</button>
+        <button class="adv-btn" id="adv-disadvantage" onclick="setAdvantage('dis')">Disadvantage</button>
+      </div>
+
+      <div class="control-row">
+        <input type="text" id="formula-input" placeholder="e.g. 2d6+4, 1d20+5" onkeydown="if(event.key==='Enter') rollFormula()">
+        <button class="roll-btn" onclick="rollFormula()"><i class="fa-solid fa-play"></i> Roll 3D</button>
+      </div>
+
+      <div class="result-display">
+        <div class="total-val" id="res-total">0</div>
+        <div class="breakdown-val" id="res-breakdown">Click a die button to roll 3D dice</div>
+      </div>
+    </div>
+
+    <!-- History Card -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2 style="margin:0;"><i class="fa-solid fa-clock-rotate-left"></i> Roll History</h2>
+        <button class="back-btn" onclick="clearHistory()"><i class="fa-solid fa-trash"></i> Clear</button>
+      </div>
+
+      <div class="history-list" id="history-list">
+        <div style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:35px 0;">
+          No rolls yet. Click any die to throw 3D physics dice!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3D Dice Engine ES Module Import -->
+  <script type="module">
+    import DiceBox from '/lib/dice-box-threejs/dice-box-threejs.es.js';
+
+    let diceBox = null;
+    let advMode = 'normal';
+    const history = [];
+
+    const statusEl = document.getElementById('dice-status');
+
+    async function initDiceBox() {
+      try {
+        const instance = new DiceBox('#dice-box-container', {
+          assetPath: '/lib/dice-box-threejs/assets/',
+          theme_colorset: 'white',
+          theme_texture: '',
+          theme_material: 'glass',
+          gravity_multiplier: 400,
+          baseScale: 100,
+          strength: 1.2,
+          shadows: true,
+          sounds: false
+        });
+
+        await instance.initialize();
+        diceBox = instance;
+        statusEl.textContent = '3D Engine Ready';
+        statusEl.style.color = '#00a2ff';
+      } catch (err) {
+        console.error('3D Dice Box init error:', err);
+        statusEl.textContent = '3D Canvas Ready';
+      }
+    }
+
+    window.changeDiceTheme = async function(theme) {
+      if (diceBox) {
+        try {
+          await diceBox.updateConfig({ theme_colorset: theme, theme_texture: '' });
+        } catch (e) {}
+      }
+    };
+
+    window.clearCanvas = function() {
+      if (diceBox) diceBox.clearDice();
+    };
+
+    window.setAdvantage = function(mode) {
+      advMode = mode;
+      document.getElementById('adv-normal').classList.toggle('active', mode === 'normal');
+      document.getElementById('adv-advantage').classList.toggle('active', mode === 'adv');
+      document.getElementById('adv-disadvantage').classList.toggle('active', mode === 'dis');
+    };
+
+    window.roll3D = function(notation) {
+      if (notation === '1d20' && advMode !== 'normal') {
+        const r1 = Math.floor(Math.random() * 20) + 1;
+        const r2 = Math.floor(Math.random() * 20) + 1;
+        let chosen = r1;
+        let label = `1d20 (${advMode === 'adv' ? 'Advantage' : 'Disadvantage'})`;
+        if (advMode === 'adv') chosen = Math.max(r1, r2);
+        if (advMode === 'dis') chosen = Math.min(r1, r2);
+
+        if (diceBox) diceBox.roll('2d20');
+        displayResult(chosen, `${label}: [${r1}, ${r2}] -> ${chosen}`, `1d20 ${advMode}`);
+        return;
+      }
+
+      const match = /^(\d+)?d(\d+)([+-]\d+)?$/i.exec(notation);
+      if (!match) return;
+
+      const qty = match[1] ? parseInt(match[1]) : 1;
+      const sides = parseInt(match[2]);
+      const mod = match[3] ? parseInt(match[3]) : 0;
+
+      let rolls = [];
+      for (let i = 0; i < Math.min(qty, 30); i++) {
+        rolls.push(Math.floor(Math.random() * sides) + 1);
+      }
+      const diceSum = rolls.reduce((a, b) => a + b, 0);
+      const total = diceSum + mod;
+      const modStr = mod > 0 ? `+${mod}` : (mod < 0 ? `${mod}` : '');
+
+      if (diceBox) {
+        diceBox.roll(notation);
+      }
+
+      displayResult(total, `${notation}: [${rolls.join(', ')}] ${modStr} = ${total}`, notation);
+    };
+
+    window.rollFormula = function() {
+      const input = document.getElementById('formula-input').value.trim();
+      if (!input) return;
+      window.roll3D(input);
+    };
+
+    function displayResult(total, breakdown, formula) {
+      document.getElementById('res-total').textContent = total;
+      document.getElementById('res-breakdown').textContent = breakdown;
+
+      history.unshift({ total, breakdown, formula, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) });
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const list = document.getElementById('history-list');
+      if (history.length === 0) {
+        list.innerHTML = `<div style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:35px 0;">No rolls yet. Click any die to throw 3D physics dice!</div>`;
+        return;
+      }
+
+      list.innerHTML = history.map(item => `
+        <div class="history-item">
+          <div>
+            <div class="history-formula">${item.formula} <span style="font-size:0.75rem;color:var(--text-muted);margin-left:6px;">${item.time}</span></div>
+            <div class="history-breakdown">${item.breakdown}</div>
+          </div>
+          <div class="history-total">${item.total}</div>
+        </div>
+      `).join('');
+    }
+
+    window.clearHistory = function() {
+      history.length = 0;
+      renderHistory();
+    };
+
+    initDiceBox();
+  </script>
+</body>
+</html>
