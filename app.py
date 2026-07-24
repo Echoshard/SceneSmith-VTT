@@ -23,6 +23,8 @@ UPLOADS_DIR = PUBLIC_DIR / "uploads"
 MEDIA_DIR = PUBLIC_DIR / "media"
 PLAYER_MEDIA_DIR = PUBLIC_DIR / "player-media"
 MUSIC_DIR = PUBLIC_DIR / "music"
+SFX_DIR = PUBLIC_DIR / "sfx"
+IMAGE_CONVERTER_DIR = PUBLIC_DIR / "imageconverter"
 NOTES_FILE = DATA_DIR / "sticky-notes.json"
 
 DEFAULT_SECRETS = {
@@ -281,6 +283,8 @@ def redirect_static_html_names():
         return redirect("/notes")
     if request.path == "/bestiary.html":
         return redirect("/bestiary")
+    if request.path == "/tavern-music.html":
+        return redirect("/tavern-music")
     return None
 
 
@@ -383,6 +387,67 @@ def player_notes_page():
 @app.get("/bestiary")
 def bestiary_page():
     return send_from_directory(PUBLIC_DIR, "bestiary.html")
+
+
+@app.get("/tavern-music")
+def tavern_music_page():
+    return send_from_directory(PUBLIC_DIR, "tavern-music.html")
+
+
+@app.get("/imageconverter")
+@app.get("/imageconverter/")
+def image_converter_page():
+    return send_from_directory(IMAGE_CONVERTER_DIR, "index.html")
+
+
+@app.get("/imageconverter/<path:filename>")
+def image_converter_static(filename):
+    return send_from_directory(IMAGE_CONVERTER_DIR, filename)
+
+
+@app.get("/sfx/<path:filename>")
+def serve_sfx(filename):
+    SFX_DIR.mkdir(parents=True, exist_ok=True)
+    return send_from_directory(SFX_DIR, filename)
+
+
+@app.post("/uploadSFX")
+def upload_sfx():
+    if not require_dm():
+        return jsonify({"success": False, "message": "Unauthorized"}), 403
+    file = request.files.get("sfx")
+    if not file:
+        return jsonify({"success": False, "message": "No file provided"}), 400
+    SFX_DIR.mkdir(parents=True, exist_ok=True)
+    filename = f"{now_ms()}-{secure_filename(file.filename)}"
+    file.save(SFX_DIR / filename)
+    return jsonify({"success": True, "sfxUrl": f"/sfx/{filename}", "filename": filename})
+
+
+@app.get("/sfxList")
+def sfx_list():
+    SFX_DIR.mkdir(parents=True, exist_ok=True)
+    tracks = []
+    for entry in SFX_DIR.iterdir():
+        if entry.is_file() and entry.suffix.lower() in MUSIC_EXTS:
+            name = re.sub(r"^\d+\s*[-_]?\s*", "", entry.name)
+            tracks.append({"name": name, "filename": entry.name, "url": f"/sfx/{entry.name}"})
+    return jsonify({"success": True, "sfxTracks": tracks})
+
+
+@app.post("/deleteSFX")
+def delete_sfx():
+    if not require_dm():
+        return jsonify({"success": False, "message": "Unauthorized"}), 403
+    filename = json_body().get("filename")
+    if not filename:
+        return jsonify({"success": False, "message": "No filename"}), 400
+    path = SFX_DIR / Path(filename).name
+    try:
+        path.unlink()
+        return jsonify({"success": True})
+    except OSError:
+        return jsonify({"success": False, "message": "File not found"}), 404
 
 
 @app.get("/api/bestiary")

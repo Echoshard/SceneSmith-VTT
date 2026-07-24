@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scene Smith - Tavern Music & SFX Soundboard</title>
+  <link rel="icon" type="image/png" href="SceneSmith.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    :root {
+      --bg: #08080c;
+      --panel: #12121a;
+      --panel-hover: #1a1a26;
+      --border: rgba(255, 255, 255, 0.12);
+      --accent: #00a2ff;
+      --accent-glow: rgba(0, 162, 255, 0.35);
+      --accent-green: #10b981;
+      --accent-purple: #8b5cf6;
+      --accent-amber: #f59e0b;
+      --text: #f0f0f5;
+      --text-muted: #9999aa;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 14px;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 162, 255, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+    }
+
+    .container {
+      max-width: 1440px;
+      width: 100%;
+    }
+
+    /* Top Navigation & Master Controls Header */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .nav-logo {
+      width: 34px;
+      height: 34px;
+      filter: drop-shadow(0 0 10px rgba(0, 162, 255, 0.4));
+    }
+
+    .nav-title h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ffffff 0%, #d0d0e0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-title p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    /* Streamlined Master Controls Bar */
+    .master-bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 10px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 14px;
+      flex-wrap: wrap;
+    }
+
+    .master-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .master-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .master-label i {
+      color: var(--accent);
+    }
+
+    .volume-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .mute-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      transition: all 0.2s ease;
+    }
+
+    .mute-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .mute-btn.active-muted {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .volume-slider {
+      flex: 1;
+      accent-color: var(--accent);
+      height: 4px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .volume-val {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      width: 36px;
+      text-align: right;
+    }
+
+    /* Main Grid Layout: Left Music, Right SFX Soundboard */
+    .app-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .app-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .section-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 120px);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title i {
+      color: var(--accent);
+    }
+
+    /* Ultra-Compact Upload Bar */
+    .upload-zone {
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 6px 12px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.02);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--accent);
+      background: rgba(0, 162, 255, 0.08);
+      color: var(--text);
+    }
+
+    .upload-zone i {
+      font-size: 0.95rem;
+      color: var(--accent);
+    }
+
+    .file-input-hidden { display: none; }
+
+    .track-actions-bar {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn {
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--panel-hover);
+      border-color: var(--accent);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .btn.primary:hover {
+      background: #0088dd;
+    }
+
+    .btn.danger-btn {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    .btn.danger-btn:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    /* Single-Row Compact Music Track Cards */
+    .tracks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow-y: auto;
+      flex: 1;
+      padding-right: 4px;
+    }
+
+    .track-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .track-card.playing {
+      border-color: var(--accent);
+      background: rgba(0, 162, 255, 0.09);
+      box-shadow: 0 2px 10px rgba(0, 162, 255, 0.18);
+    }
+
+    .play-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .play-btn:hover {
+      transform: scale(1.1);
+      background: #38bdf8;
+    }
+
+    .track-name {
+      font-weight: 700;
+      font-size: 0.82rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 110px;
+      max-width: 220px;
+      flex: 0 1 auto;
+    }
+
+    .time-display {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      min-width: 70px;
+      white-space: nowrap;
+    }
+
+    .seek-slider {
+      flex: 1;
+      min-width: 60px;
+      height: 4px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .track-vol-slider {
+      width: 65px;
+      height: 4px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .track-controls-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .icon-toggle {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      transition: all 0.2s ease;
+    }
+
+    .icon-toggle.active-loop {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+    }
+
+    .del-btn {
+      background: transparent;
+      border: none;
+      color: #666677;
+      cursor: pointer;
+      padding: 4px;
+      font-size: 0.8rem;
+      transition: color 0.2s ease;
+    }
+
+    .del-btn:hover {
+      color: var(--danger);
+    }
+
+    /* Compact SFX Soundboard Grid */
+    .sfx-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+      gap: 8px;
+      overflow-y: auto;
+      flex: 1;
+      padding-right: 4px;
+    }
+
+    .sfx-pad {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sfx-pad:hover {
+      background: var(--panel-hover);
+      border-color: var(--accent-amber);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+    }
+
+    .sfx-pad.playing {
+      background: rgba(245, 158, 11, 0.18);
+      border-color: var(--accent-amber);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.4);
+      animation: pulseGlow 1.2s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 6px rgba(245, 158, 11, 0.3); }
+      to { box-shadow: 0 0 16px rgba(245, 158, 11, 0.6); }
+    }
+
+    .sfx-icon {
+      font-size: 1.1rem;
+      color: var(--accent-amber);
+      margin-bottom: 4px;
+    }
+
+    .sfx-title {
+      font-size: 0.76rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      line-height: 1.15;
+      word-break: break-word;
+      max-width: 100%;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .sfx-pad-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+      justify-content: center;
+      margin-top: auto;
+    }
+
+    .sfx-loop-btn {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.65rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .sfx-loop-btn.active {
+      background: var(--accent-green);
+      color: #fff;
+      border-color: var(--accent-green);
+    }
+
+    .sfx-vol-input {
+      width: 44px;
+      height: 3px;
+      accent-color: var(--accent-amber);
+    }
+
+    .sfx-del-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: transparent;
+      border: none;
+      color: #555566;
+      font-size: 0.7rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .sfx-pad:hover .sfx-del-btn {
+      opacity: 1;
+    }
+
+    .sfx-del-btn:hover {
+      color: var(--danger);
+    }
+
+    .empty-msg {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      padding: 20px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Top Header -->
+    <header class="top-nav">
+      <a href="/" class="nav-brand">
+        <img src="SceneSmith.png" alt="Scene Smith" class="nav-logo">
+        <div class="nav-title">
+          <h1>Tavern Music & SFX</h1>
+          <p>Multi-Track Ambient Mixer & Soundboard Workstation</p>
+        </div>
+      </a>
+      <a href="/" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Return to Hub</span>
+      </a>
+    </header>
+
+    <!-- Streamlined Master Controls Bar -->
+    <div class="master-bar">
+      <!-- Master Music Volume -->
+      <div class="master-item">
+        <div class="master-label">
+          <i class="fa-solid fa-music"></i>
+          <span>Music Master</span>
+        </div>
+        <div class="volume-row">
+          <button class="mute-btn" id="musicMuteBtn" title="Mute Music">
+            <i class="fa-solid fa-volume-high" id="musicMuteIcon"></i>
+          </button>
+          <input type="range" class="volume-slider" id="musicMasterVol" min="0" max="100" value="80">
+          <span class="volume-val" id="musicMasterVal">80%</span>
+        </div>
+      </div>
+
+      <!-- Master SFX Volume -->
+      <div class="master-item">
+        <div class="master-label">
+          <i class="fa-solid fa-bolt"></i>
+          <span>SFX Master</span>
+        </div>
+        <div class="volume-row">
+          <button class="mute-btn" id="sfxMuteBtn" title="Mute Soundboard SFX">
+            <i class="fa-solid fa-volume-high" id="sfxMuteIcon"></i>
+          </button>
+          <input type="range" class="volume-slider" id="sfxMasterVol" min="0" max="100" value="90">
+          <span class="volume-val" id="sfxMasterVal">90%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Workspace Grid -->
+    <div class="app-grid">
+      
+      <!-- Music Section -->
+      <section class="section-box">
+        <div class="section-header">
+          <div class="section-title">
+            <i class="fa-solid fa-compact-disc"></i>
+            <span>Multi-Track Music Mixer</span>
+          </div>
+          <div class="track-actions-bar">
+            <button class="btn primary" id="playAllMusicBtn"><i class="fa-solid fa-play"></i> Play All</button>
+            <button class="btn" id="pauseAllMusicBtn"><i class="fa-solid fa-pause"></i> Pause All</button>
+          </div>
+        </div>
+
+        <!-- Ultra-Compact Upload Music Drop Bar -->
+        <div class="upload-zone" id="musicUploadDrop">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>Click or drag audio tracks here to upload</span>
+          <input type="file" id="musicFileInput" class="file-input-hidden" accept="audio/*" multiple>
+        </div>
+
+        <!-- Music Track List -->
+        <div class="tracks-list" id="musicTracksContainer">
+          <div class="empty-msg" id="noMusicMsg">No music tracks uploaded yet. Drag audio files above!</div>
+        </div>
+      </section>
+
+      <!-- Soundboard SFX Section -->
+      <section class="section-box">
+        <div class="section-header">
+          <div class="section-title">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>SFX Soundboard</span>
+          </div>
+          <button class="btn danger-btn" id="stopAllSFXBtn"><i class="fa-solid fa-stop"></i> Stop All SFX</button>
+        </div>
+
+        <!-- Ultra-Compact Upload SFX Drop Bar -->
+        <div class="upload-zone" id="sfxUploadDrop">
+          <i class="fa-solid fa-plus-circle"></i>
+          <span>Click or drag SFX sound files here to add pads</span>
+          <input type="file" id="sfxFileInput" class="file-input-hidden" accept="audio/*" multiple>
+        </div>
+
+        <!-- SFX Grid Pads -->
+        <div class="sfx-grid" id="sfxGridContainer">
+          <div class="empty-msg" id="noSFXMsg">No sound effects added yet. Upload files above or click preset pads!</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script>
+    // State management
+    let masterMusicVolume = 0.8;
+    let isMusicMuted = false;
+    let masterSFXVolume = 0.9;
+    let isSFXMuted = false;
+
+    // Track state arrays
+    const musicTracks = []; // { id, name, url, filename, audio, isPlaying, isLoop, volume }
+    const sfxPads = [];    // { id, name, url, filename, audio, isLoop, volume }
+
+    // Master Volume Controls
+    const musicMasterVol = document.getElementById('musicMasterVol');
+    const musicMasterVal = document.getElementById('musicMasterVal');
+    const musicMuteBtn = document.getElementById('musicMuteBtn');
+    const musicMuteIcon = document.getElementById('musicMuteIcon');
+
+    const sfxMasterVol = document.getElementById('sfxMasterVol');
+    const sfxMasterVal = document.getElementById('sfxMasterVal');
+    const sfxMuteBtn = document.getElementById('sfxMuteBtn');
+    const sfxMuteIcon = document.getElementById('sfxMuteIcon');
+
+    musicMasterVol.addEventListener('input', (e) => {
+      masterMusicVolume = e.target.value / 100;
+      musicMasterVal.textContent = e.target.value + '%';
+      updateAllMusicVolumes();
+    });
+
+    musicMuteBtn.addEventListener('click', () => {
+      isMusicMuted = !isMusicMuted;
+      musicMuteBtn.classList.toggle('active-muted', isMusicMuted);
+      musicMuteIcon.className = isMusicMuted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
+      updateAllMusicVolumes();
+    });
+
+    sfxMasterVol.addEventListener('input', (e) => {
+      masterSFXVolume = e.target.value / 100;
+      sfxMasterVal.textContent = e.target.value + '%';
+      updateAllSFXVolumes();
+    });
+
+    sfxMuteBtn.addEventListener('click', () => {
+      isSFXMuted = !isSFXMuted;
+      sfxMuteBtn.classList.toggle('active-muted', isSFXMuted);
+      sfxMuteIcon.className = isSFXMuted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
+      updateAllSFXVolumes();
+    });
+
+    function updateAllMusicVolumes() {
+      musicTracks.forEach(track => {
+        if (track.audio) {
+          track.audio.volume = isMusicMuted ? 0 : (track.volume * masterMusicVolume);
+        }
+      });
+    }
+
+    function updateAllSFXVolumes() {
+      sfxPads.forEach(pad => {
+        if (pad.audio) {
+          pad.audio.volume = isSFXMuted ? 0 : (pad.volume * masterSFXVolume);
+        }
+      });
+    }
+
+    // Format helper for audio seek time (e.g. 125s -> "2:05")
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "0:00";
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    // Initialize Upload Handlers
+    function setupUpload(dropId, inputId, endpoint, fieldName, onSuccess) {
+      const dropZone = document.getElementById(dropId);
+      const fileInput = document.getElementById(inputId);
+
+      dropZone.addEventListener('click', () => fileInput.click());
+
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'var(--accent)';
+      });
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.style.borderColor = 'rgba(255, 255, 255, 0.18)';
+      });
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'rgba(255, 255, 255, 0.18)';
+        if (e.dataTransfer.files.length) {
+          uploadFiles(e.dataTransfer.files, endpoint, fieldName, onSuccess);
+        }
+      });
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) {
+          uploadFiles(fileInput.files, endpoint, fieldName, onSuccess);
+        }
+      });
+    }
+
+    function uploadFiles(files, endpoint, fieldName, onSuccess) {
+      Array.from(files).forEach(file => {
+        const formData = new FormData();
+        formData.append(fieldName, file);
+
+        fetch(endpoint, {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            onSuccess();
+          } else {
+            alert('Upload failed: ' + (data.message || 'Error uploading file'));
+          }
+        })
+        .catch(err => alert('Upload error: ' + err.message));
+      });
+    }
+
+    setupUpload('musicUploadDrop', 'musicFileInput', '/uploadMusic', 'music', loadMusicList);
+    setupUpload('sfxUploadDrop', 'sfxFileInput', '/uploadSFX', 'sfx', loadSFXList);
+
+    // Fetch and render Music tracks
+    function loadMusicList() {
+      fetch('/musicList')
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.musicTracks) {
+            syncMusicTracks(data.musicTracks);
+          }
+        })
+        .catch(err => console.error('Error fetching music list:', err));
+    }
+
+    function syncMusicTracks(fetchedTracks) {
+      const container = document.getElementById('musicTracksContainer');
+      document.getElementById('noMusicMsg').style.display = fetchedTracks.length ? 'none' : 'block';
+
+      // Remove deleted tracks
+      for (let i = musicTracks.length - 1; i >= 0; i--) {
+        const existing = musicTracks[i];
+        if (!fetchedTracks.some(t => t.filename === existing.filename)) {
+          if (existing.audio) {
+            existing.audio.pause();
+            existing.audio = null;
+          }
+          musicTracks.splice(i, 1);
+        }
+      }
+
+      // Add or update fetched tracks
+      fetchedTracks.forEach(t => {
+        let track = musicTracks.find(m => m.filename === t.filename);
+        if (!track) {
+          const audio = new Audio(t.url);
+          audio.loop = true; // Default to looping for ambient music
+          track = {
+            id: 'music_' + Math.random().toString(36).substr(2, 9),
+            name: t.name,
+            url: t.url,
+            filename: t.filename,
+            audio: audio,
+            isPlaying: false,
+            isLoop: true,
+            volume: 1.0
+          };
+
+          audio.addEventListener('timeupdate', () => {
+            const card = document.getElementById(track.id);
+            if (card) {
+              const seek = card.querySelector('.seek-slider');
+              const timeDisplay = card.querySelector('.time-display');
+              if (seek && !seek.isDragging) {
+                seek.value = (audio.currentTime / (audio.duration || 1)) * 100;
+              }
+              if (timeDisplay) {
+                timeDisplay.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+              }
+            }
+          });
+
+          audio.addEventListener('ended', () => {
+            if (!track.isLoop) {
+              track.isPlaying = false;
+              renderMusicTracks();
+            }
+          });
+
+          musicTracks.push(track);
+        }
+      });
+
+      renderMusicTracks();
+    }
+
+    function renderMusicTracks() {
+      const container = document.getElementById('musicTracksContainer');
+      
+      musicTracks.forEach(track => {
+        let card = document.getElementById(track.id);
+        if (!card) {
+          card = document.createElement('div');
+          card.id = track.id;
+          card.className = 'track-card';
+          container.appendChild(card);
+        }
+
+        card.className = `track-card ${track.isPlaying ? 'playing' : ''}`;
+        card.innerHTML = `
+          <button class="play-btn" onclick="togglePlayMusic('${track.id}')">
+            <i class="${track.isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play'}"></i>
+          </button>
+          <span class="track-name" title="${track.name}">${track.name}</span>
+          <span class="time-display">${formatTime(track.audio.currentTime)} / ${formatTime(track.audio.duration)}</span>
+          <input type="range" class="seek-slider" min="0" max="100" value="${(track.audio.currentTime / (track.audio.duration || 1)) * 100}">
+          <input type="range" class="track-vol-slider" min="0" max="100" value="${track.volume * 100}" title="Track Volume">
+          <div class="track-controls-right">
+            <button class="icon-toggle ${track.isLoop ? 'active-loop' : ''}" onclick="toggleLoopMusic('${track.id}')" title="Toggle Loop">
+              <i class="fa-solid fa-repeat"></i>
+            </button>
+            <button class="del-btn" onclick="deleteMusicTrack('${track.filename}')" title="Delete Track">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+
+        // Attach range slider events
+        const seek = card.querySelector('.seek-slider');
+        seek.addEventListener('mousedown', () => seek.isDragging = true);
+        seek.addEventListener('mouseup', () => seek.isDragging = false);
+        seek.addEventListener('change', (e) => {
+          if (track.audio.duration) {
+            track.audio.currentTime = (e.target.value / 100) * track.audio.duration;
+          }
+        });
+
+        const vol = card.querySelector('.track-vol-slider');
+        vol.addEventListener('input', (e) => {
+          track.volume = e.target.value / 100;
+          track.audio.volume = isMusicMuted ? 0 : (track.volume * masterMusicVolume);
+        });
+      });
+    }
+
+    function togglePlayMusic(id) {
+      const track = musicTracks.find(t => t.id === id);
+      if (!track) return;
+
+      if (track.isPlaying) {
+        track.audio.pause();
+        track.isPlaying = false;
+      } else {
+        track.audio.volume = isMusicMuted ? 0 : (track.volume * masterMusicVolume);
+        track.audio.play().catch(e => console.error("Playback block:", e));
+        track.isPlaying = true;
+      }
+      renderMusicTracks();
+    }
+
+    function toggleLoopMusic(id) {
+      const track = musicTracks.find(t => t.id === id);
+      if (!track) return;
+      track.isLoop = !track.isLoop;
+      track.audio.loop = track.isLoop;
+      renderMusicTracks();
+    }
+
+    function deleteMusicTrack(filename) {
+      if (!confirm('Are you sure you want to delete this track?')) return;
+      fetch('/deleteMusic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          loadMusicList();
+        } else {
+          alert('Delete failed: ' + (data.message || 'Error'));
+        }
+      });
+    }
+
+    document.getElementById('playAllMusicBtn').addEventListener('click', () => {
+      musicTracks.forEach(t => {
+        t.audio.volume = isMusicMuted ? 0 : (t.volume * masterMusicVolume);
+        t.audio.play().catch(() => {});
+        t.isPlaying = true;
+      });
+      renderMusicTracks();
+    });
+
+    document.getElementById('pauseAllMusicBtn').addEventListener('click', () => {
+      musicTracks.forEach(t => {
+        t.audio.pause();
+        t.isPlaying = false;
+      });
+      renderMusicTracks();
+    });
+
+    // SFX Soundboard Handlers
+    function loadSFXList() {
+      fetch('/sfxList')
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.sfxTracks) {
+            syncSFXPads(data.sfxTracks);
+          }
+        })
+        .catch(err => console.error('Error fetching SFX list:', err));
+    }
+
+    function syncSFXPads(fetchedSFX) {
+      const container = document.getElementById('sfxGridContainer');
+      document.getElementById('noSFXMsg').style.display = fetchedSFX.length ? 'none' : 'block';
+
+      // Remove deleted SFX
+      for (let i = sfxPads.length - 1; i >= 0; i--) {
+        const existing = sfxPads[i];
+        if (!fetchedSFX.some(s => s.filename === existing.filename)) {
+          if (existing.audio) {
+            existing.audio.pause();
+            existing.audio = null;
+          }
+          sfxPads.splice(i, 1);
+        }
+      }
+
+      // Add or update SFX pads
+      fetchedSFX.forEach(s => {
+        let pad = sfxPads.find(p => p.filename === s.filename);
+        if (!pad) {
+          const audio = new Audio(s.url);
+          pad = {
+            id: 'sfx_' + Math.random().toString(36).substr(2, 9),
+            name: s.name,
+            url: s.url,
+            filename: s.filename,
+            audio: audio,
+            isPlaying: false,
+            isLoop: false,
+            volume: 1.0,
+            icon: pickSFXIcon(s.name)
+          };
+
+          audio.addEventListener('ended', () => {
+            if (!pad.isLoop) {
+              pad.isPlaying = false;
+              renderSFXPads();
+            }
+          });
+
+          sfxPads.push(pad);
+        }
+      });
+
+      renderSFXPads();
+    }
+
+    function pickSFXIcon(name) {
+      const lower = name.toLowerCase();
+      if (lower.includes('sword') || lower.includes('slash') || lower.includes('hit')) return 'fa-solid fa-hand-fist';
+      if (lower.includes('spell') || lower.includes('magic') || lower.includes('fire')) return 'fa-solid fa-wand-magic-sparkles';
+      if (lower.includes('rain') || lower.includes('thunder') || lower.includes('storm')) return 'fa-solid fa-cloud-showers-heavy';
+      if (lower.includes('cheer') || lower.includes('tavern') || lower.includes('laugh')) return 'fa-solid fa-beer-mug-empty';
+      if (lower.includes('monster') || lower.includes('roar') || lower.includes('growl')) return 'fa-solid fa-dragon';
+      if (lower.includes('dice') || lower.includes('roll')) return 'fa-solid fa-dice-d20';
+      return 'fa-solid fa-bolt';
+    }
+
+    function renderSFXPads() {
+      const container = document.getElementById('sfxGridContainer');
+
+      sfxPads.forEach(pad => {
+        let padElem = document.getElementById(pad.id);
+        if (!padElem) {
+          padElem = document.createElement('div');
+          padElem.id = pad.id;
+          container.appendChild(padElem);
+        }
+
+        padElem.className = `sfx-pad ${pad.isPlaying ? 'playing' : ''}`;
+        padElem.innerHTML = `
+          <button class="sfx-del-btn" onclick="deleteSFXPad(event, '${pad.filename}')" title="Delete SFX">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          <div class="sfx-icon" onclick="triggerSFX('${pad.id}')">
+            <i class="${pad.icon}"></i>
+          </div>
+          <div class="sfx-title" onclick="triggerSFX('${pad.id}')">${pad.name}</div>
+          <div class="sfx-pad-controls">
+            <button class="sfx-loop-btn ${pad.isLoop ? 'active' : ''}" onclick="toggleSFXLoop(event, '${pad.id}')" title="Loop SFX">
+              <i class="fa-solid fa-repeat"></i>
+            </button>
+            <input type="range" class="sfx-vol-input" min="0" max="100" value="${pad.volume * 100}" onclick="event.stopPropagation()" title="Pad Volume">
+          </div>
+        `;
+
+        const vol = padElem.querySelector('.sfx-vol-input');
+        vol.addEventListener('input', (e) => {
+          pad.volume = e.target.value / 100;
+          if (pad.audio) {
+            pad.audio.volume = isSFXMuted ? 0 : (pad.volume * masterSFXVolume);
+          }
+        });
+      });
+    }
+
+    function triggerSFX(id) {
+      const pad = sfxPads.find(p => p.id === id);
+      if (!pad) return;
+
+      if (pad.isLoop && pad.isPlaying) {
+        pad.audio.pause();
+        pad.isPlaying = false;
+      } else {
+        if (pad.isLoop) {
+          pad.audio.loop = true;
+          pad.audio.volume = isSFXMuted ? 0 : (pad.volume * masterSFXVolume);
+          pad.audio.play().catch(() => {});
+          pad.isPlaying = true;
+        } else {
+          const instance = pad.audio.cloneNode();
+          instance.volume = isSFXMuted ? 0 : (pad.volume * masterSFXVolume);
+          instance.play().catch(() => {});
+          pad.isPlaying = true;
+          setTimeout(() => {
+            pad.isPlaying = false;
+            renderSFXPads();
+          }, 400);
+        }
+      }
+      renderSFXPads();
+    }
+
+    function toggleSFXLoop(event, id) {
+      event.stopPropagation();
+      const pad = sfxPads.find(p => p.id === id);
+      if (!pad) return;
+      pad.isLoop = !pad.isLoop;
+      if (pad.audio) {
+        pad.audio.loop = pad.isLoop;
+      }
+      renderSFXPads();
+    }
+
+    function deleteSFXPad(event, filename) {
+      event.stopPropagation();
+      if (!confirm('Delete this sound effect pad?')) return;
+      fetch('/deleteSFX', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          loadSFXList();
+        } else {
+          alert('Delete failed: ' + (data.message || 'Error'));
+        }
+      });
+    }
+
+    document.getElementById('stopAllSFXBtn').addEventListener('click', () => {
+      sfxPads.forEach(p => {
+        if (p.audio) {
+          p.audio.pause();
+          p.audio.currentTime = 0;
+        }
+        p.isPlaying = false;
+      });
+      renderSFXPads();
+    });
+
+    // Initial Load
+    loadMusicList();
+    loadSFXList();
+  </script>
+</body>
+</html>

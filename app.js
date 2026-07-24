@@ -27,10 +27,19 @@ app.use((req, res, next) => {
   if (req.path === '/index.html') return res.redirect('/');
   if (req.path === '/dm.html') return res.redirect('/dm');
   if (req.path === '/files.html') return res.redirect('/files');
+  if (req.path === '/tavern-music.html') return res.redirect('/tavern-music');
   next();
 });
 app.use(express.static(path.join(__dirname, 'public'), {
   index: false,
+  setHeaders(res, filePath) {
+    if (/\.(html|css|js)$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'no-store');
+    }
+  },
+}));
+app.use('/imageconverter', express.static(path.join(__dirname, 'imageconverter'), {
+  index: 'index.html',
   setHeaders(res, filePath) {
     if (/\.(html|css|js)$/i.test(filePath)) {
       res.setHeader('Cache-Control', 'no-store');

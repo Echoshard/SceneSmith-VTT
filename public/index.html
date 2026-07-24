@@ -32,7 +32,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 40px 20px;
+      padding: 12px 14px;
       background-image: 
         radial-gradient(circle at 50% 0%, rgba(0, 162, 255, 0.12) 0%, transparent 60%),
         radial-gradient(circle at 80% 80%, rgba(30, 30, 60, 0.3) 0%, transparent 50%);
@@ -45,14 +45,14 @@
     }
 
     .brand-header {
-      margin-bottom: 36px;
+      margin-bottom: 12px;
     }
 
     .logo-img {
-      width: 100px;
+      width: 52px;
       height: auto;
-      margin-bottom: 14px;
-      filter: drop-shadow(0 0 20px rgba(0, 162, 255, 0.4));
+      margin-bottom: 4px;
+      filter: drop-shadow(0 0 14px rgba(0, 162, 255, 0.4));
       transition: transform 0.3s ease;
     }
 
@@ -61,10 +61,10 @@
     }
 
     h1.title {
-      font-size: 2.6rem;
+      font-size: 1.6rem;
       font-weight: 800;
       letter-spacing: -0.5px;
-      margin-bottom: 6px;
+      margin-bottom: 2px;
       background: linear-gradient(135deg, #ffffff 0%, #d0d0e0 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -72,45 +72,47 @@
 
     p.subtitle {
       color: var(--text-muted);
-      font-size: 1.05rem;
+      font-size: 0.85rem;
       font-weight: 500;
       max-width: 520px;
       margin: 0 auto;
     }
 
     .status-bar {
-      margin-top: 16px;
+      margin-top: 6px;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border);
-      padding: 5px 14px;
-      border-radius: 20px;
-      font-size: 0.82rem;
+      padding: 3px 10px;
+      border-radius: 16px;
+      font-size: 0.76rem;
       color: var(--text-muted);
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background-color: #4CAF50;
-      box-shadow: 0 0 8px #4CAF50;
+      box-shadow: 0 0 6px #4CAF50;
     }
 
+    /* Flex layout centered so incomplete rows align in the middle */
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 18px;
-      margin-top: 32px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 14px;
     }
 
     .portal-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 22px 18px;
+      border-radius: 10px;
+      padding: 12px 12px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -119,6 +121,8 @@
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
+      flex: 0 0 210px;
+      width: 210px;
     }
 
     .portal-card::before {
@@ -135,8 +139,8 @@
     .portal-card:hover {
       background: var(--card-hover);
       border-color: var(--accent);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 30px -10px var(--accent-glow);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px -6px var(--accent-glow);
     }
 
     .portal-card:hover::before {
@@ -144,17 +148,17 @@
     }
 
     .card-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
       background: rgba(0, 162, 255, 0.1);
       border: 1px solid rgba(0, 162, 255, 0.2);
       color: var(--accent);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
-      margin-bottom: 14px;
+      font-size: 17px;
+      margin-bottom: 6px;
       transition: transform 0.25s ease, background 0.25s ease;
     }
 
@@ -165,32 +169,32 @@
     }
 
     .card-title {
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       font-weight: 700;
-      margin-bottom: 6px;
+      margin-bottom: 3px;
     }
 
     .card-desc {
-      font-size: 0.82rem;
+      font-size: 0.74rem;
       color: var(--text-muted);
-      line-height: 1.35;
-      margin-bottom: 16px;
+      line-height: 1.25;
+      margin-bottom: 8px;
       flex-grow: 1;
     }
 
     .card-btn {
       width: 100%;
-      padding: 8px 14px;
-      border-radius: 6px;
+      padding: 5px 10px;
+      border-radius: 5px;
       background: #1a1a24;
       border: 1px solid var(--border);
       color: #fff;
       font-weight: 600;
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 5px;
       transition: all 0.2s ease;
     }
 
@@ -201,8 +205,8 @@
     }
 
     .footer {
-      margin-top: 40px;
-      font-size: 0.8rem;
+      margin-top: 12px;
+      font-size: 0.74rem;
       color: #666677;
     }
   </style>
@@ -322,6 +326,32 @@
         <div class="card-desc">Generate level 1–20 minion stat blocks instantly.</div>
         <div class="card-btn">
           <span>Open Fodder Maker</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- Tavern Music & Soundboard -->
+      <a href="/tavern-music" class="portal-card">
+        <div class="card-icon">
+          <i class="fa-solid fa-music"></i>
+        </div>
+        <div class="card-title">Tavern Music</div>
+        <div class="card-desc">Multi-track looping music mixer and SFX soundboard.</div>
+        <div class="card-btn">
+          <span>Open Tavern Music</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- Image Converter -->
+      <a href="/imageconverter" class="portal-card">
+        <div class="card-icon">
+          <i class="fa-solid fa-photo-film"></i>
+        </div>
+        <div class="card-title">Image Converter</div>
+        <div class="card-desc">Crop, resize, erase background, and convert image formats.</div>
+        <div class="card-btn">
+          <span>Open Image Studio</span>
           <i class="fa-solid fa-arrow-right"></i>
         </div>
       </a>

@@ -24,6 +24,7 @@ const MEDIA_EXTS = new Set([...IMAGE_EXTS, ...VIDEO_EXTS, ...DOC_EXTS]);
 const sceneController = require('./controllers/sceneController');
 const uploadController = require('./controllers/uploadController');
 const musicController = require('./controllers/musicController');
+const sfxController = require('./controllers/sfxController');
 const stickyNotesController = require('./controllers/stickyNotesController');
 
 // Middleware to check if user is authenticated as DM
@@ -292,10 +293,23 @@ router.put('/passwords', checkDMAuth, async (req, res) => {
   }
 });
 
-// Music Routes
+// Music & SFX Routes
 router.post('/uploadMusic', checkDMAuth, musicController.uploadMusic);
 router.get('/musicList', musicController.getMusicList); // Players can get music list
 router.post('/deleteMusic', checkDMAuth, musicController.deleteMusic);
+
+router.post('/uploadSFX', checkDMAuth, sfxController.uploadSFX);
+router.get('/sfxList', sfxController.getSFXList);
+router.post('/deleteSFX', checkDMAuth, sfxController.deleteSFX);
+
+// App Pages
+router.get('/tavern-music', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'tavern-music.html'));
+});
+
+router.get('/imageconverter', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'imageconverter', 'index.html'));
+});
 
 // Sticky Notes Routes (DM only)
 router.get('/sticky-notes',  checkDMAuth, stickyNotesController.getNotes);
